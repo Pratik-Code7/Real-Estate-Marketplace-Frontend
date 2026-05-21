@@ -88,6 +88,7 @@ const Landing = () => {
             </div>
           </div>
         </div>
+
         <div className="info h-[50vh] w-full bg-gray-200 flex flex-col justify-center items-center py-50">
           <div className="txt-info font-bold text-2xl">
             Why Choose HamroRent?
@@ -98,6 +99,55 @@ const Landing = () => {
             <InfoBox />
           </div>
         </div>
+        <footer className=" w-full flex flex-col justify-center items-center  ">
+          <div className="h-0.5 w-full bg-gray-400 "></div>
+          <div className="  text-center  w-full flex p-10 justify-between items-center gap-10  ">
+            <div className="flex flex-col  w-[35%] h-40 gap-3 text-start ">
+              <h1>
+                <b>HamroRent</b>
+              </h1>
+              <p>
+                Nepal's trusted community-driven rental marketplace. We make
+                finding and listing rental properties simple, transparent, and
+                direct.
+              </p>
+            </div>
+            <div className="flex flex-col justify-center w-[25%]  h-40  gap-3 ">
+              <h1>QUICK LINKS</h1>
+              <ol className="flex flex-col gap-3 text-gray-700 ">
+                <li>
+                  <a href="/">Home</a>
+                </li>
+                <li>
+                  <a href="/">Buy</a>
+                </li>
+                <li>
+                  <a href="/">Rent</a>
+                </li>
+
+                <li>
+                  <a href="/">Sell</a>
+                </li>
+              </ol>
+            </div>
+            <div className="flex flex-col justify-start w-[25%]  h-40  gap-3 ">
+              <h1>LEGAL</h1>
+              <ol className="flex flex-col gap-3 text-gray-700 ">
+                <li>
+                  <a href="/">Terms of Service</a>
+                </li>
+                <li>
+                  <a href="/">Privacy Policy</a>
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div className="h-0.5 w-full bg-gray-400"></div>
+
+          <div className="w-full h-20  flex justify-center items-center ">
+            <p>&copy; 2023 HamroRent. All rights reserved.</p>
+          </div>
+        </footer>
       </div>
     </>
   );
