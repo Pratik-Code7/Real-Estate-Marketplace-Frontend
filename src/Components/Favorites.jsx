@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Fav_Comp from "./Fav_Comp";
 
 const Favorites = () => {
   // const [like, setlike] = useState(false);
@@ -35,52 +36,9 @@ const Favorites = () => {
     },
   ];
   return (
-    <div className="dash-right h-full overflow-y-auto  w-full flex flex-wrap   p-10  gap-10 ">
-      {properties.map((elem) => (
-        <div className="bg-gray-500 h-80 w-86 rounded-2xl overflow-hidden shadow-2xl relative">
-          <div className="absolute h-[68%] flex  flex-col  w-full justify-between items-center gap-2 ">
-            <div className="w-full px-5 py-2 flex justify-end">
-              <div className="heart    rounded-full h-8 w-8 flex justify-center  items-center bg-white text-red-600">
-                <i className="ri-heart-line"></i>
-              </div>
-            </div>
-            <div className="w-full flex text-xs justify-between py-3 px-3">
-              <div className="px-5 py-1 flex justify-center items-center bg-white rounded-2xl">
-                Apartment
-              </div>
-              <div className="px-5 py-1 flex justify-center items-center text-sm bg-white rounded-lg ">
-                Rs $10000/mo
-              </div>
-            </div>
-          </div>
-          <div className="image h-[68%] w-full ">
-            <img
-              src={elem.img}
-              alt="Property"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="list-text bg-white w-full h-[32%] px-4 py-2 text-[1rem] gap-0.15 flex flex-col justify-between  ">
-            {elem.title}
-            <div className="flex items-center gap-2  text-gray-700 ">
-              <i className="ri-map-pin-2-fill"></i>
-              <p className=" text-xs">Lorem ipsum dolor sit amet</p>
-            </div>
-            <div className="flex items-center gap-1 text-xs font-medium text-gray-600 mb-1">
-              <div className="flex justify-center items-center bg-gray-200 h-7 rounded-[10px] py-1 px-3">
-                1 Room
-              </div>
-              <div className="flex justify-center items-center bg-gray-200 h-7 rounded-[10px] py-1 px-3">
-                2 Bath
-              </div>
-              <div className="flex justify-center items-center bg-gray-200 h-7 rounded-[10px] py-1 px-3">
-                1200 sqft
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-      <div className="w-full h-24 p-20 mb-10 bg-white  rounded-2xl flex justify-center items-center gap-10">
+    <div className="dash-right h-full overflow-y-auto  w-full flex flex-wrap gap-10 ">
+      <Fav_Comp />
+      <div className="w-full h-24 p-20 mx-10 mb-20 bg-white  rounded-2xl flex justify-center items-center  gap-10">
         <div className="bg-gray-100 rounded-full text-4xl  h-18 w-18 flex justify-center items-center">
           <i class="ri-folder-open-fill"></i>
         </div>

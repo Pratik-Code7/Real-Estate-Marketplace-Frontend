@@ -32,7 +32,7 @@ const Searchbar = () => {
   ];
   return (
     <div className="searchbar w-full  bg-white  rounded-2xl px-5 py-3 flex flex-col gap-2 ">
-      <div className="top flex justify-between items-center ">
+      <div className="top flex flex-col md:flex-row md:justify-between md:items-center ">
         <div className="left  flex justify-between items-center  h-10 gap-3 font-bold bg-gray-100 rounded-full px-2 ">
           <button
             onClick={() => setActive(1)}
@@ -59,7 +59,7 @@ const Searchbar = () => {
         </div> */}
         <div className="right"></div>
       </div>
-      <div className="search flex items-center gap-3 pb-2">
+      <div className="search flex flex-col md:flex-row items-center gap-3 pb-2">
         <div>
           <p>Location</p>
           <select name="" id="">

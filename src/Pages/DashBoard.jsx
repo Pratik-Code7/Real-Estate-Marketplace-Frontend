@@ -10,7 +10,7 @@ const DashBoard = () => {
   const dashList = [
     "My Properties",
     "Favorites",
-    "Messages",
+    "Notifications",
     "Profile Settings",
   ];
 
