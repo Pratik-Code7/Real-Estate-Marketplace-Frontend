@@ -53,24 +53,16 @@ const Landing = () => {
       <Navbar />
       <div className="min-h-screen  min-w-full  ">
         <div
-          className="h-[95vh] w-full  lpage relative flex flex-col  justify-center gap-10  bg-cover bg-center  "
+          className="min-h-[70vh] md:min-h-[95vh] w-full  lpage relative flex flex-col  justify-center gap-10  bg-cover bg-center  "
           style={{ backgroundImage: `url(${hero})` }}
         >
           <div className="absolute inset-0 bg-black/20"></div>
 
-          {/* <video
-            src={video}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover absolute "
-          ></video> */}
-          <div className="absolute z-10 flex flex-col justify-center gap-6  mx-10  ">
-            <div className="text-5xl  font-bold  leading-tight">
+          <div className="absolute z-10 flex flex-col justify-center gap-6  mx-10   ">
+            <div className="text-4xl  md:text-5xl font-bold leading-tight text-left">
               Find your next <br /> home in Nepal
             </div>
-            <p className="text-xl  ">
+            <p className="  md:text-xl  ">
               Buy, Sell, Rent properties with ease.
               <br />
               Trusted by thousands of users across Nepal.
@@ -79,39 +71,36 @@ const Landing = () => {
           </div>
         </div>
         <div className="min-h-screen w-full bg-white">
-          <div className="flex flex-col justify-center items-center gap-5 p-10 text-2xl font-bold ">
-            <div className="flex flex-col justify-center  gap-5 p-10 text-2xl font-bold ">
-              <h1 className="">Featured Listing</h1>
-              <div className="listings flex justify-center items-center flex-wrap gap-11 ">
-                {loading
-                  ? Array(6)
-                      .fill(0)
-                      .map((_, i) => <ListItemSkeleton key={i} />)
-                  : data.map((item) => (
-                      <List_item
-                        key={item.id}
-                        image={item.image}
-                        text={item.text}
-                      />
-                    ))}
-
-                {/* {data.map((item) => (
+          <div className="flex flex-col justify-center items-center gap-5 p-4 md:p-10 text-2xl font-bold  ">
+            <h1 className="w-full text-left pl-5 md:pl-14">Featured Listing</h1>
+            <div className="listings grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 w-full max-w-7xl mx-auto">
+              {loading
+                ? Array(6)
+                    .fill(0)
+                    .map((_, i) => <ListItemSkeleton key={i} />)
+                : data.map((item) => (
+                    <List_item
+                      key={item.id}
+                      image={item.image}
+                      text={item.text}
+                    />
+                  ))}
+              {/* {data.map((item) => (
                   <List_item
                     key={item.id}
                     image={item.image}
                     text={item.text}
                   />
                 ))} */}
-              </div>
             </div>
           </div>
         </div>
 
-        <div className="info h-[50vh] w-full bg-gray-200 flex flex-col justify-center items-center py-50">
+        <div className="info min-h-[50vh] w-full bg-gray-200 flex flex-col justify-center items-center py-16 gap-5 ">
           <div className="txt-info font-bold text-2xl">
             Why Choose HamroRent?
           </div>
-          <div className="box-info flex justify-center items-center gap-20 ">
+          <div className="box-info grid grid-cols-1 md:grid-cols-3 md:gap-20   ">
             <InfoBox />
             <InfoBox />
             <InfoBox />
@@ -119,8 +108,8 @@ const Landing = () => {
         </div>
         <footer className=" w-full flex flex-col justify-center items-center  ">
           {/* <div className="h-0.5 w-full bg-gray-400 "></div> */}
-          <div className="  text-center  w-full flex p-10 justify-between items-center gap-10  ">
-            <div className="flex flex-col  w-[35%] h-40 gap-3 text-start ">
+          <div className="  w-full flex flex-col md:flex-row justify-between items-start gap-10 p-6 md:p-10  ">
+            <div className="flex flex-col w-full md:w-1/3 gap-3 text-center md:text-left">
               <h1>
                 <b>HamroRent</b>
               </h1>
@@ -130,7 +119,7 @@ const Landing = () => {
                 direct.
               </p>
             </div>
-            <div className="flex flex-col justify-center w-[25%]  h-40  gap-3 ">
+            <div className="flex flex-col w-full md:w-1/4 gap-3 text-center md:text-left ">
               <h1>QUICK LINKS</h1>
               <ol className="flex flex-col gap-3 text-gray-700 ">
                 <li>
@@ -148,7 +137,7 @@ const Landing = () => {
                 </li>
               </ol>
             </div>
-            <div className="flex flex-col justify-start w-[25%]  h-40  gap-3 ">
+            <div className="flex flex-col w-full md:w-1/4 gap-3 text-center md:text-left ">
               <h1>LEGAL</h1>
               <ol className="flex flex-col gap-3 text-gray-700 ">
                 <li>
