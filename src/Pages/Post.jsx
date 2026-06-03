@@ -15,18 +15,19 @@ const Post = () => {
   ];
 
   return (
-    <div className="p-6 bg-gray-200 min-h-screen">
+    <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold">Post Property</h1>
-          <p className="text-gray-500">
+          <h1 className="text-3xl font-bold mb-1">Post Property</h1>
+          <p className="text-gray-600">
             Fill the form below to publish your property.
           </p>
         </div>
 
         <form className="space-y-6">
+          {/* Adds vertical spacing between child elements inside a container. */}
           {/* BASIC DETAILS */}
-          <div className="bg-white border rounded-xl p-5">
+          <div className="bg-white  shadow-2xl rounded-xl p-5">
             <h2 className="font-semibold text-lg mb-4">Basic Details</h2>
 
             <div className="grid md:grid-cols-3 gap-4">
@@ -35,13 +36,13 @@ const Post = () => {
                 <input
                   type="text"
                   placeholder="Enter property title"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
               <div>
                 <label className="text-sm">Property Type</label>
-                <select className="w-full mt-1 border rounded-lg p-2">
+                <select className="w-full mt-1 border border-gray-500 rounded-lg p-2">
                   <option>Select Type</option>
                   <option>Apartment</option>
                   <option>House</option>
@@ -52,7 +53,7 @@ const Post = () => {
 
               <div>
                 <label className="text-sm">Property Status</label>
-                <select className="w-full mt-1 border rounded-lg p-2">
+                <select className="w-full mt-1 border border-gray-500 rounded-lg p-2">
                   <option>Select Status</option>
                   <option>For Sale</option>
                   <option>For Rent</option>
@@ -64,14 +65,13 @@ const Post = () => {
                 <textarea
                   rows="4"
                   placeholder="Enter property description"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
             </div>
           </div>
-
           {/* PRICING & LOCATION */}
-          <div className="bg-white border rounded-xl p-5">
+          <div className="bg-white shadow-2xl rounded-xl p-5">
             <h2 className="font-semibold text-lg mb-4">Pricing & Location</h2>
 
             <div className="grid md:grid-cols-3 gap-4">
@@ -80,13 +80,13 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Enter price"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
               <div>
                 <label className="text-sm">Currency</label>
-                <select className="w-full mt-1 border rounded-lg p-2">
+                <select className="w-full mt-1 border border-gray-500 rounded-lg p-2">
                   <option>USD ($)</option>
                   <option>NPR (Rs)</option>
                   <option>INR (₹)</option>
@@ -95,7 +95,7 @@ const Post = () => {
 
               <div>
                 <label className="text-sm">Negotiable</label>
-                <select className="w-full mt-1 border rounded-lg p-2">
+                <select className="w-full mt-1 border border-gray-500  rounded-lg p-2">
                   <option>Select</option>
                   <option>Yes</option>
                   <option>No</option>
@@ -104,7 +104,7 @@ const Post = () => {
 
               <div>
                 <label className="text-sm">Country</label>
-                <select className="w-full mt-1 border rounded-lg p-2">
+                <select className="w-full mt-1 border border-gray-500 rounded-lg p-2">
                   <option>Select Country</option>
                   <option>Nepal</option>
                   <option>India</option>
@@ -113,7 +113,7 @@ const Post = () => {
 
               <div>
                 <label className="text-sm">City</label>
-                <select className="w-full mt-1 border rounded-lg p-2">
+                <select className="w-full mt-1 border border-gray-500 rounded-lg p-2">
                   <option>Select City</option>
                   <option>Kathmandu</option>
                   <option>Pokhara</option>
@@ -125,7 +125,7 @@ const Post = () => {
                 <input
                   type="text"
                   placeholder="Enter address"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -134,14 +134,13 @@ const Post = () => {
                 <input
                   type="text"
                   placeholder="Search location on Google Maps"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
             </div>
           </div>
-
           {/* PROPERTY DETAILS */}
-          <div className="bg-white border rounded-xl p-5">
+          <div className="bg-white shadow-2xl rounded-xl p-5">
             <h2 className="font-semibold text-lg mb-4">Property Details</h2>
 
             <div className="grid md:grid-cols-4 gap-4">
@@ -150,7 +149,7 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Enter area"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -159,7 +158,7 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Enter bedrooms"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -168,7 +167,7 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Enter bathrooms"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -177,7 +176,7 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Enter floors"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -186,7 +185,7 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Parking spaces"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -195,21 +194,20 @@ const Post = () => {
                 <input
                   type="number"
                   placeholder="Year built"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
             </div>
           </div>
-
           {/* Facilities */}
-          <div className="bg-white border rounded-xl p-5">
+          <div className="bg-white shadow-2xl rounded-xl p-5">
             <h2 className="font-semibold text-lg mb-4">Facilities</h2>
 
             <div className="grid md:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-3">
               {Facilities.map((item) => (
                 <label
                   key={item}
-                  className="flex items-center gap-2 border rounded-lg p-3 cursor-pointer hover:bg-gray-50"
+                  className="flex items-center gap-2 border border-gray-500 rounded-lg p-3 cursor-pointer hover:bg-gray-50"
                 >
                   <input type="checkbox" />
                   <span className="text-sm">{item}</span>
@@ -217,18 +215,16 @@ const Post = () => {
               ))}
             </div>
           </div>
-
           {/* PROPERTY IMAGES */}
-          <div className="bg-white border rounded-xl p-5">
+          <div className="bg-white shadow-2xl rounded-xl p-5">
             <h2 className="font-semibold text-lg mb-4">Property Images</h2>
 
             <div className="border-2 border-dashed rounded-xl p-10 text-center">
               <input type="file" multiple accept="image/*" className="mb-3" />
             </div>
           </div>
-
           {/* CONTACT INFORMATION */}
-          <div className="bg-white border rounded-xl p-5">
+          <div className="bg-white shadow-2xl rounded-xl p-5">
             <h2 className="font-semibold text-lg mb-4">Contact Information</h2>
 
             <div className="grid md:grid-cols-3 gap-4">
@@ -237,7 +233,7 @@ const Post = () => {
                 <input
                   type="text"
                   placeholder="Enter your name"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -246,7 +242,7 @@ const Post = () => {
                 <input
                   type="tel"
                   placeholder="Enter phone number"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
 
@@ -255,7 +251,7 @@ const Post = () => {
                 <input
                   type="email"
                   placeholder="Enter email"
-                  className="w-full mt-1 border rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
               </div>
             </div>
@@ -266,12 +262,11 @@ const Post = () => {
               </label>
             </div>
           </div>
-
           {/* BUTTONS */}
           <div className="flex justify-between">
             <a
               href="/"
-              className="border px-6 py-3 rounded-lg bg-white hover:bg-gray-100"
+              className="shadow-2xl px-6 py-3 rounded-lg bg-white hover:bg-gray-100"
             >
               Cancel
             </a>

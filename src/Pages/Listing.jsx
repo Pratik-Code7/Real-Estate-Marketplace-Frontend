@@ -5,10 +5,18 @@ const Listing = () => {
   const [active, setactive] = useState(0);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-6">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-6">
+    <div className="min-h-screen bg-gray-50 px-10 py-8 ">
+      <div className="mb-4">
+        <button
+          onClick={() => window.history.back()}
+          className="text-sm text-gray-600 hover:text-black flex items-center gap-1 bg-white px-3 py-1 rounded-lg shadow-sm"
+        >
+          <i class="ri-arrow-go-back-line"></i> Back
+        </button>
+      </div>
+      <div className="w-full  mx-auto flex flex-col md:flex-row gap-6  ">
         {/* FILTER SIDEBAR */}
-        <div className="w-full md:w-1/3 lg:w-1/4 bg-white p-5 rounded-2xl shadow-md h-fit">
+        <div className="w-full  md:w-1/3 lg:w-1/4 bg-white p-5 rounded-2xl shadow-md  ">
           <h2 className="text-xl font-semibold mb-4">
             <i className="ri-filter-line text-xm font-semibold"></i> Filter
             Properties
@@ -109,7 +117,7 @@ const Listing = () => {
         </div>
 
         {/* RIGHT CONTENT */}
-        <div className="flex-1">
+        <div className="h-screen overflow-y-auto">
           <Fav_Comp />
         </div>
       </div>

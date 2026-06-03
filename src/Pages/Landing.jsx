@@ -72,7 +72,9 @@ const Landing = () => {
         </div>
         <div className="min-h-screen w-full bg-white">
           <div className="flex flex-col justify-center items-center gap-5 p-4 md:p-10 text-2xl font-bold  ">
-            <h1 className="w-full text-left pl-5 md:pl-14">Featured Listing</h1>
+            <h1 className="w-full text-center md:text-left  md:pl-14">
+              Featured Listing
+            </h1>
             <div className="listings grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 w-full max-w-7xl mx-auto">
               {loading
                 ? Array(6)
@@ -119,9 +121,9 @@ const Landing = () => {
                 direct.
               </p>
             </div>
-            <div className="flex flex-col w-full md:w-1/4 gap-3 text-center md:text-left ">
+            <div className="flex flex-col w-full md:w-1/4 gap-3 text-center md:text-center ">
               <h1>QUICK LINKS</h1>
-              <ol className="flex flex-col gap-3 text-gray-700 ">
+              <ol className="flex flex-col gap-3  text-gray-700 ">
                 <li>
                   <a href="/">Home</a>
                 </li>
@@ -137,7 +139,7 @@ const Landing = () => {
                 </li>
               </ol>
             </div>
-            <div className="flex flex-col w-full md:w-1/4 gap-3 text-center md:text-left ">
+            <div className="flex flex-col w-full md:w-1/4 gap-3 text-center  ">
               <h1>LEGAL</h1>
               <ol className="flex flex-col gap-3 text-gray-700 ">
                 <li>
