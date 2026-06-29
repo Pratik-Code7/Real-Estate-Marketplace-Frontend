@@ -5,6 +5,8 @@ import Auth from "./Pages/Auth";
 import DashBoard from "./Pages/DashBoard";
 import Listing from "./Pages/Listing";
 import Post from "./Pages/post";
+import NotFoundPage from "./Components/NotFoundPage";
+import Signup from "./Pages/Signup";
 const App = () => {
   return (
     <Routes>
@@ -13,6 +15,8 @@ const App = () => {
       <Route path="/dashboard" element={<DashBoard />} />
       <Route path="/listing" element={<Listing />} />
       <Route path="/post" element={<Post />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

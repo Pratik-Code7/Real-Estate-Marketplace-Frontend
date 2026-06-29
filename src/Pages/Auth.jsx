@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Auth.css";
+import { Link } from "react-router-dom";
 import google from "../assets/google.png";
 import { useGoogleLogin } from "@react-oauth/google";
 const Auth = () => {
@@ -30,8 +31,10 @@ const Auth = () => {
           <h1 className="font-bold text-2xl">Welcome Back</h1>
           <p className="text-l text-gray-600">Login to Continue</p>
         </div>
-        <div className=" flex flex-col gap-2 p-5 ">
-          <label htmlFor="email">Email</label>
+        <div className=" flex flex-col gap-2 px-5 ">
+          <label htmlFor="email" className="mt-2">
+            Email
+          </label>
           <input type="text" id="email" placeholder="Email" />
           <label htmlFor="password">Password</label>
           <div className="relative w-full">
@@ -72,6 +75,13 @@ const Auth = () => {
             <img src={google} alt="Google Logo" className="w-6  " />
             <h1>Continue with Google</h1>
           </button>
+
+          <Link
+            to="/signup"
+            className="flex justify-center items-center text-sm p-1 mt-2 gap-1"
+          >
+            Don't have an account? Sign Up
+          </Link>
         </div>
       </div>
     </div>

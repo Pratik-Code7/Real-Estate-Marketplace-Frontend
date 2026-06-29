@@ -39,7 +39,7 @@ const Navbar = () => {
             className="outline-0"
           />
         </div>
-        <div className="hidden md:block bg-black py-2 w-full rounded text-white px-5 cursor-pointer">
+        <div className="hidden md:block bg-black py-2 w-full rounded-3xl text-white px-5 cursor-pointer">
           <Link to="/post">Post Property</Link>
         </div>
         <div className="hidden sm:flex">
@@ -49,7 +49,7 @@ const Navbar = () => {
             </div>
           ) : (
             <div
-              className="  bg-black py-2 px-5 rounded text-white cursor-pointer"
+              className="  bg-black py-2 px-5 rounded-3xl text-white cursor-pointer"
               onClick={() => {
                 navigate("/auth");
                 setlogin(true);
