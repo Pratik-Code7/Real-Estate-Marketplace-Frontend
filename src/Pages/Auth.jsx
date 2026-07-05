@@ -3,27 +3,53 @@ import "./Auth.css";
 import { Link } from "react-router-dom";
 import google from "../assets/google.png";
 import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 const Auth = () => {
   const [ShowPassword, setShowPassword] = useState(false);
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      console.log("Access Token:", tokenResponse.access_token);
-
-      // fetch user info from Google API
-      const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: {
-          Authorization: `Bearer ${tokenResponse.access_token}`,
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/google",
+        {
+          credential: credentialResponse.credential,
         },
-      });
+        {
+          withCredentials: true,
+        },
+      );
 
-      const user = await res.json();
+      console.log(res.data);
 
-      console.log("User:", user);
+      // Optional if you're using JWT in response
+      localStorage.setItem("token", res.data.token);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
+  };
 
-      localStorage.setItem("user", JSON.stringify(user));
-    },
-    onError: () => console.log("Login Failed"),
-  });
+  const handleGoogleError = () => {
+    console.log("Google Login Failed");
+  };
+  // const googleLogin = useGoogleLogin({
+  //   onSuccess: async (tokenResponse) => {
+  //     console.log("Access Token:", tokenResponse.access_token);
+
+  //     // fetch user info from Google API
+  //     const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+  //       headers: {
+  //         Authorization: `Bearer ${tokenResponse.access_token}`,
+  //       },
+  //     });
+
+  //     const user = await res.json();
+
+  //     console.log("User:", user);
+
+  //     localStorage.setItem("user", JSON.stringify(user));
+  //   },
+  //   onError: () => console.log("Login Failed"),
+  // });
   return (
     <div className=" flex justify-center items-center h-screen w-screen bg-white p-5 ">
       <div className="container bg-white rounded-2xl  flex flex-col  h-auto w-100 p-6  md:w-96">
@@ -67,14 +93,18 @@ const Auth = () => {
             <div>OR</div>
             <div className="line"></div>
           </div>
-          <button
+          {/* <button
             type="submit"
             onClick={() => googleLogin()}
             className="gbtn rounded-xl p-2.5 flex justify-center items-center gap-2 w-full"
           >
             <img src={google} alt="Google Logo" className="w-6  " />
             <h1>Continue with Google</h1>
-          </button>
+          </button> */}
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+          />
 
           <Link
             to="/signup"
