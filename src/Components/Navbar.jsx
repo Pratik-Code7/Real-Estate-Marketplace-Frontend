@@ -7,13 +7,9 @@ const Navbar = () => {
   return (
     <nav className=" sticky top-0 z-50 w-full bg-white px-4 sm:px-6 py-3 md:py-0 flex flex-col sm:flex-row items-center justify-between  gap-1   ">
       <div className="flex  gap-6 items-center  ">
-        <div className="h-16 w-30">
+        <div className="h-16  overflow-hidden">
           <a href="/" className="text-l sm:text-xl">
-            <img
-              src={logo}
-              alt="Logo"
-              className=" h-full w-full object-cover "
-            />
+            <img src={logo} alt="Logo" className=" h-18 w-18 object-cover" />
           </a>
         </div>
         <Link to="/listing">Listing</Link>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../Components/Navbar";
 import hero from "../assets/hero.png";
+import limg from "../assets/new limg.png";
 import { useEffect } from "react";
 import Searchbar from "../Components/Searchbar";
 import video from "../assets/video.mp4";
@@ -54,15 +55,15 @@ const Landing = () => {
       <div className="min-h-screen  min-w-full  ">
         <div
           className="min-h-[70vh] md:min-h-[95vh] w-full  lpage relative flex flex-col  justify-center gap-10  bg-cover bg-center  "
-          style={{ backgroundImage: `url(${hero})` }}
+          style={{ backgroundImage: `url(${limg})` }} // hero from olld img
         >
           <div className="absolute inset-0 bg-black/20"></div>
 
-          <div className="absolute z-10 flex flex-col justify-center gap-6  mx-10   ">
+          <div className="absolute z-10 flex flex-col justify-center gap-6  m-10 md:mx-20 lg:mx-20  tracking-wider ">
             <div className="text-4xl  md:text-5xl font-bold leading-tight text-left">
               Find your next <br /> home in Nepal
             </div>
-            <p className="  md:text-xl  ">
+            <p className="  md:text-xl  m-1 md:m-0 text-left">
               Buy, Sell, Rent properties with ease.
               <br />
               Trusted by thousands of users across Nepal.
@@ -104,8 +105,34 @@ const Landing = () => {
           </div>
           <div className="box-info grid grid-cols-1 md:grid-cols-3 md:gap-20   ">
             <InfoBox />
-            <InfoBox />
-            <InfoBox />
+            <div className="w-full sm:w-72 md:w-80 flex flex-col justify-center items-center gap-3 rounded-2xl p-5 ">
+              <div className="bg-white h-14 w-14 sm:h-16 sm:w-16 rounded-full flex justify-center items-center text-black text-2xl">
+                <i class="ri-search-line"></i>
+              </div>
+
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
+                Smart Search
+              </h1>
+
+              <p className="text-center text-xs sm:text-sm text-gray-600">
+                Find your ideal room, apartment, or house using location, price,
+                property type, and amenities.
+              </p>
+            </div>
+            <div className="w-full sm:w-72 md:w-80 flex flex-col justify-center items-center gap-3 rounded-2xl p-5 ">
+              <div className="bg-white h-14 w-14 sm:h-16 sm:w-16 rounded-full flex justify-center items-center text-black text-2xl">
+                <i class="ri-chat-3-line"></i>
+              </div>
+
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
+                Direct Contact
+              </h1>
+
+              <p className="text-center text-xs sm:text-sm text-gray-600">
+                Connect directly with property owners without unnecessary
+                middlemen for faster communication.
+              </p>
+            </div>
           </div>
         </div>
         <footer className=" w-full flex flex-col justify-center items-center  ">

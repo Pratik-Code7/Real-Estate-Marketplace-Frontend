@@ -2,7 +2,7 @@ import React from "react";
 
 const List_item = ({ image, text }) => {
   return (
-    <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col">
+    <div className="w-full max-w-sm mx-auto rounded-2xl overflow-hidden shadow-lg bg-white flex flex-col">
       {/* IMAGE */}
       <div className="w-full h-48 sm:h-56 md:h-64">
         <img

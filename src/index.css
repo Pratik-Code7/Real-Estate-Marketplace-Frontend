@@ -3,7 +3,8 @@
 
 /* overflow-x: hidden; */
 body {
-  font-family: "Inter", sans-serif;
+  /* font-family: "Inter", sans-serif; */
+  font-family: Georgia, serif;
 }
 
 .left button {

@@ -7,17 +7,23 @@ import Listing from "./Pages/Listing";
 import Post from "./Pages/post";
 import NotFoundPage from "./Components/NotFoundPage";
 import Signup from "./Pages/Signup";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const App = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/dashboard" element={<DashBoard />} />
-      <Route path="/listing" element={<Listing />} />
-      <Route path="/post" element={<Post />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <>
+      <ToastContainer theme="light" />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={<DashBoard />} />
+        <Route path="/listing" element={<Listing />} />
+        <Route path="/post" element={<Post />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 };
 

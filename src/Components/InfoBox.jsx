@@ -8,12 +8,12 @@ const InfoBox = () => {
       </div>
 
       <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
-        Verified listing
+        Verified Properties
       </h1>
 
       <p className="text-center text-xs sm:text-sm text-gray-600">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos,
-        voluptate. Doloribus, quisquam. Voluptas, voluptatem.
+        Every listing is reviewed to reduce fake ads and provide trusted rental
+        options across Nepal.
       </p>
     </div>
   );

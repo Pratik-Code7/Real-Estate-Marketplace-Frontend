@@ -44,7 +44,7 @@ const Property = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {dashStats.map((elem, idx) => (
-          <div key={idx} className="bg-white p-4 rounded-xl shadow-lg ">
+          <div key={idx} className="bg-white p-4 rounded-xl shadow-md ">
             <h3 className="text-sm text-gray-500">{elem.title}</h3>
             <p className="text-xl font-bold">{elem.value}</p>
           </div>
@@ -56,7 +56,7 @@ const Property = () => {
         {items.map((elem, idx) => (
           <div
             key={idx}
-            className="w-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-lg "
+            className="w-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-xs "
           >
             {/* Image */}
             <div className="relative h-56 md:h-auto md:w-1/3">

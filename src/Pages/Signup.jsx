@@ -1,9 +1,53 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/register",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: "tenant", // Remove if not needed
+        },
+      );
+
+      toast.success(response.data.message || "Registration Successful");
+      navigate("/");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+
+      toast.error(error.response?.data?.message || "Registration Failed");
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen w-screen bg-white p-5">
@@ -13,15 +57,29 @@ const Signup = () => {
           <p className="text-gray-600">Sign up to get started</p>
         </div>
 
-        <div className="flex flex-col gap-2 px-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 px-5">
           <label htmlFor="name" className="mt-2">
             Full Name
           </label>
-          <input type="text" id="name" placeholder="Full Name" />
-
+          <input
+            type="text"
+            id="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
           <label htmlFor="email">Email</label>
-          <input type="email" id="email" placeholder="Email" />
-
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            required
+          />
           <label htmlFor="password">Password</label>
           <div className="relative w-full">
             <input
@@ -29,6 +87,11 @@ const Signup = () => {
               id="password"
               placeholder="Password"
               className="w-full"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              required
             />
             <button
               type="button"
@@ -50,6 +113,14 @@ const Signup = () => {
               id="confirmPassword"
               placeholder="Confirm Password"
               className="w-full"
+              value={formData.confirmPassword}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  confirmPassword: e.target.value,
+                })
+              }
+              required
             />
             <button
               type="button"
@@ -77,7 +148,7 @@ const Signup = () => {
           >
             Already have an account? Login
           </Link>
-        </div>
+        </form>
       </div>
     </div>
   );
