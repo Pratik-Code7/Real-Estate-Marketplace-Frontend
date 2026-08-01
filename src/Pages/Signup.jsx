@@ -33,6 +33,7 @@ const Signup = () => {
       );
 
       toast.success(response.data.message || "Registration Successful");
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       navigate("/");
       setFormData({
         name: "",

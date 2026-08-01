@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const Fav_Comp = ({ filters }) => {
   const properties = [
     {
@@ -125,14 +125,14 @@ const Fav_Comp = ({ filters }) => {
         filteredProperties.map((elem) => (
           <div
             key={elem.id}
-            className="bg-white rounded-2xl overflow-hidden shadow-xs flex flex-col md:flex-row"
+            className="bg-white rounded-2xl overflow-hidden shadow-xs flex flex-col md:flex-row group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 cursor-pointer"
           >
             {/* Image */}
-            <div className="relative h-56 md:h-auto md:w-1/3">
+            <div className="relative h-56 md:h-auto md:w-1/3 overflow-hidden">
               <img
                 src={elem.img}
                 alt={elem.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
 
               <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded text-sm">

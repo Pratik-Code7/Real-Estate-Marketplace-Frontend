@@ -9,12 +9,14 @@ import NotFoundPage from "./Components/NotFoundPage";
 import Signup from "./Pages/Signup";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PropertyDetails from "./Pages/PropertyDetails";
 
 const App = () => {
   return (
     <>
       <ToastContainer theme="light" />
       <Routes>
+        <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<DashBoard />} />

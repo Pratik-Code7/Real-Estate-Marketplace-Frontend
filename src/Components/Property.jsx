@@ -56,14 +56,14 @@ const Property = () => {
         {items.map((elem, idx) => (
           <div
             key={idx}
-            className="w-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-xs "
+            className="w-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-xs group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 cursor-pointer"
           >
             {/* Image */}
-            <div className="relative h-56 md:h-auto md:w-1/3">
+            <div className="relative h-56 md:h-auto md:w-1/3 overflow-hidden">
               <img
                 src={elem.img}
                 alt={elem.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
 
               <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded-xl text-xs">
@@ -77,7 +77,7 @@ const Property = () => {
                 {/* Title */}
                 <div className="flex  md:flex-row justify-between gap-2">
                   <h2 className="text-lg font-bold">{elem.title}</h2>
-                  <p className="font-semibold">$1000</p>
+                  <p className="font-semibold">Rs 1000/mo</p>
                 </div>
 
                 {/* Features */}

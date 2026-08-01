@@ -1,6 +1,46 @@
-import React from "react";
-
+import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 const Post = () => {
+  const [image, setImage] = useState(null);
+  const publishProperty = async (e) => {
+    e.preventDefault();
+
+    try {
+      const property = {
+        title: "Test Property",
+        location: "Kathmandu",
+        price: 25000,
+        bedroom: 2,
+        bathroom: 1,
+        area: 1200,
+        status: "For Rent",
+      };
+
+      const res = await axios.post(
+        "http://localhost:3000/api/property/add",
+        property,
+        {
+          withCredentials: true, // if using JWT cookie
+        },
+      );
+
+      toast.success(res.data.message);
+    } catch (error) {
+      console.error("Publish Property Error:", error);
+
+      if (error.response) {
+        // Backend returned an error
+        toast.error(error.response.data.message || "Server Error");
+      } else if (error.request) {
+        // No response from server
+        toast.error("Cannot connect to the server.");
+      } else {
+        // Other error
+        toast.error(error.message);
+      }
+    }
+  };
   const Facilities = [
     "WiFi",
     "Air Conditioning",
@@ -24,7 +64,7 @@ const Post = () => {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={publishProperty}>
           {/* Adds vertical spacing between child elements inside a container. */}
           {/* BASIC DETAILS */}
           <div className="bg-white  shadow-2xl rounded-xl p-5">
@@ -82,15 +122,6 @@ const Post = () => {
                   placeholder="Enter price"
                   className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                 />
-              </div>
-
-              <div>
-                <label className="text-sm">Currency</label>
-                <select className="w-full mt-1 border border-gray-500 rounded-lg p-2">
-                  <option>USD ($)</option>
-                  <option>NPR (Rs)</option>
-                  <option>INR (₹)</option>
-                </select>
               </div>
 
               <div>
@@ -220,7 +251,12 @@ const Post = () => {
             <h2 className="font-semibold text-lg mb-4">Property Images</h2>
 
             <div className="border-2 border-dashed rounded-xl p-10 text-center">
-              <input type="file" multiple accept="image/*" className="mb-3" />
+              <input
+                type="file"
+                accept="image/*"
+                className="mb-3"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
             </div>
           </div>
           {/* CONTACT INFORMATION */}
@@ -273,7 +309,7 @@ const Post = () => {
 
             <button
               type="submit"
-              className="bg-black text-white px-8 py-3 rounded-lg "
+              className="bg-black text-white px-8 py-3 rounded-lg"
             >
               Publish Property
             </button>

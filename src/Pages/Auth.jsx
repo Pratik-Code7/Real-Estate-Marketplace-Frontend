@@ -6,13 +6,15 @@ import google from "../assets/google.png";
 import { useGoogleLogin } from "@react-oauth/google";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Components/AuthContext";
 import axios from "axios";
 const Auth = () => {
+  const { setLogin } = useAuth();
   const navigate = useNavigate();
   const [ShowPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
+  // const [login, setLogin] = useState(false);
   const [password, setPassword] = useState("");
-  const [login, setLogin] = useState(false);
   // const handleGoogleSuccess = async (credentialResponse) => {
   //   try {
   //     const res = await axios.post("http://localhost:3000/api/auth/google", {
@@ -48,6 +50,7 @@ const Auth = () => {
   //   },
   //   onError: () => console.log("Login Failed"),
   // });
+
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
@@ -60,7 +63,6 @@ const Auth = () => {
         navigate("/");
         setLogin(true);
         console.log("Backend response:", res.data);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
         // navigate to dashboard/home here if needed
       } catch (error) {
         toast.error(
@@ -80,6 +82,9 @@ const Auth = () => {
         {
           email,
           password,
+        },
+        {
+          withCredentials: true,
         },
       );
 

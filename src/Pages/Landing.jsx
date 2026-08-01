@@ -71,7 +71,7 @@ const Landing = () => {
             <Searchbar />
           </div>
         </div>
-        <div className="min-h-screen w-full bg-white">
+        <div className="min-h-screen w-full bg-gray-50">
           <div className="flex flex-col justify-center items-center gap-5 p-4 md:p-10 text-2xl font-bold  ">
             <h1 className="w-full text-center md:text-left  md:pl-14">
               Featured Listing
@@ -84,6 +84,7 @@ const Landing = () => {
                 : data.map((item) => (
                     <List_item
                       key={item.id}
+                      id={item.id}
                       image={item.image}
                       text={item.text}
                     />
@@ -100,14 +101,12 @@ const Landing = () => {
         </div>
 
         <div className="info min-h-[50vh] w-full bg-gray-200 flex flex-col justify-center items-center py-16 gap-5 ">
-          <div className="txt-info font-bold text-2xl">
-            Why Choose HamroRent?
-          </div>
+          <div className="txt-info font-bold text-2xl">Why Choose NESTRA?</div>
           <div className="box-info grid grid-cols-1 md:grid-cols-3 md:gap-20   ">
             <InfoBox />
             <div className="w-full sm:w-72 md:w-80 flex flex-col justify-center items-center gap-3 rounded-2xl p-5 ">
               <div className="bg-white h-14 w-14 sm:h-16 sm:w-16 rounded-full flex justify-center items-center text-black text-2xl">
-                <i class="ri-search-line"></i>
+                <i className="ri-search-line"></i>
               </div>
 
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
@@ -121,7 +120,7 @@ const Landing = () => {
             </div>
             <div className="w-full sm:w-72 md:w-80 flex flex-col justify-center items-center gap-3 rounded-2xl p-5 ">
               <div className="bg-white h-14 w-14 sm:h-16 sm:w-16 rounded-full flex justify-center items-center text-black text-2xl">
-                <i class="ri-chat-3-line"></i>
+                <i className="ri-chat-3-line"></i>
               </div>
 
               <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center">
@@ -140,7 +139,7 @@ const Landing = () => {
           <div className="  w-full flex flex-col md:flex-row justify-between items-start gap-10 p-6 md:p-10  ">
             <div className="flex flex-col w-full md:w-1/3 gap-3 text-center md:text-left">
               <h1>
-                <b>HamroRent</b>
+                <b>NesTra</b>
               </h1>
               <p>
                 Nepal's trusted community-driven rental marketplace. We make

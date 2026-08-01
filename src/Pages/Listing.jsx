@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Fav_Comp from "../Components/Fav_Comp";
 import Navbar from "../Components/Navbar";
 
 const Listing = () => {
+  const [searchParams] = useSearchParams();
+
   // Filter State
   const [filters, setFilters] = useState({
     location: "",
     propertyType: "All",
-    price: 5000,
+    price: 50000,
     bedrooms: "Any",
     bathrooms: "Any",
     facilities: [],
@@ -15,6 +18,40 @@ const Listing = () => {
 
   // Temp state (form inputs before "Apply" is clicked)
   const [tempFilters, setTempFilters] = useState(filters);
+
+  // Sync state with URL search params when they change
+  useEffect(() => {
+    const loc = searchParams.get("location") || "";
+    let pType = searchParams.get("propertyType") || "All";
+
+    // Map Searchbar selections to corresponding Listing types
+    if (pType === "Office Space") {
+      pType = "Office";
+    } else if (pType === "Residential House") {
+      pType = "House";
+    }
+
+    let pr = 50000;
+    const urlPrice = searchParams.get("price");
+    if (urlPrice) {
+      const parsedPrice = Number(urlPrice);
+      if (!isNaN(parsedPrice)) {
+        pr = parsedPrice > 50000 ? 50000 : parsedPrice;
+      }
+    }
+
+    const newFilters = {
+      location: loc,
+      propertyType: pType,
+      price: pr,
+      bedrooms: "Any",
+      bathrooms: "Any",
+      facilities: [],
+    };
+
+    setFilters(newFilters);
+    setTempFilters(newFilters);
+  }, [searchParams]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +79,7 @@ const Listing = () => {
     const defaultFilters = {
       location: "",
       propertyType: "All",
-      price: 5000,
+      price: 50000,
       bedrooms: "Any",
       bathrooms: "Any",
       facilities: [],
@@ -100,6 +137,12 @@ const Listing = () => {
                     <option>Villa</option>
                     <option>House</option>
                     <option>Office</option>
+                    <option>Penthouse</option>
+                    <option>Land</option>
+                    <option>Duplex</option>
+                    <option>Flat</option>
+                    <option>Commercial Property</option>
+                    <option>Retail Shop</option>
                   </select>
                 </div>
 
@@ -108,14 +151,14 @@ const Listing = () => {
                   <div className="flex justify-between">
                     <label>Price Range</label>
 
-                    <span>${tempFilters.price}</span>
+                    <span>Rs {tempFilters.price}</span>
                   </div>
 
                   <input
                     type="range"
                     name="price"
                     min="500"
-                    max="5000"
+                    max="100000"
                     value={tempFilters.price}
                     onChange={handleChange}
                     className="w-full accent-black"
