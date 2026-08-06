@@ -62,45 +62,51 @@ const Searchbar = () => {
   };
 
   return (
-    <div className="searchbar w-full bg-white rounded-2xl px-5 py-3 flex flex-col gap-2">
+    <div className="searchbar bg-white  w-full  lg:max-w-[50rem] rounded-2xl px-3 sm:px-4 md:px-5 py-3 flex flex-col gap-2 overflow-hidden">
+      {" "}
       {/* TOP */}
       <div className="top flex flex-col md:flex-row md:justify-between md:items-center">
-        <div className="left flex justify-between items-center h-10 gap-3 font-bold bg-gray-100 rounded-full px-2">
+        <div className="left flex justify-between items-center h-10 gap-2 sm:gap-3 font-bold bg-gray-100 rounded-full px-2">
           <button
             onClick={() => setActive(1)}
-            className={active === 1 ? "bg-black text-white" : "text-gray-700"}
+            className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm ${
+              active === 1 ? "bg-black text-white" : "text-gray-700"
+            }`}
           >
             Buy
           </button>
 
           <button
             onClick={() => setActive(2)}
-            className={active === 2 ? "bg-black text-white" : "text-gray-700"}
+            className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm ${
+              active === 2 ? "bg-black text-white" : "text-gray-700"
+            }`}
           >
             Rent
           </button>
 
           <button
             onClick={() => setActive(3)}
-            className={active === 3 ? "bg-black text-white" : "text-gray-700"}
+            className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm ${
+              active === 3 ? "bg-black text-white" : "text-gray-700"
+            }`}
           >
             Sell
           </button>
         </div>
       </div>
-
       {/* SEARCH */}
-
-      <div className="search flex flex-col md:flex-row items-center gap-3 pb-2">
+      <div className="search flex flex-col justify-center  md:flex-row items-center gap-4 sm:gap-3 pb-2 ">
         {/* LOCATION */}
 
-        <div>
-          <p>Location</p>
+        <div className="flex items-center justify-center   flex-col md:block w-full md:w-auto flex-1 min-w-0">
+          <p className="text-xs sm:text-sm mb-2">Location</p>
 
           <select
             name="location"
             value={search.location}
             onChange={handleChange}
+            className="w-full text-xs sm:text-sm"
           >
             <option value="">Select Location</option>
 
@@ -114,13 +120,14 @@ const Searchbar = () => {
 
         {/* PROPERTY TYPE */}
 
-        <div>
-          <p>Property Type</p>
+        <div className="w-full flex items-center justify-center flex-col md:block md:w-auto flex-1 min-w-0">
+          <p className="text-xs sm:text-sm mb-2">Property Type</p>
 
           <select
             name="propertyType"
             value={search.propertyType}
             onChange={handleChange}
+            className="w-full text-xs sm:text-sm"
           >
             <option value="">Select Property</option>
 
@@ -165,10 +172,15 @@ const Searchbar = () => {
 
         {/* PRICE */}
 
-        <div>
-          <p>Price</p>
+        <div className="flex items-center justify-center flex-col md:block w-full md:w-auto flex-1 min-w-0">
+          <p className="text-xs sm:text-sm mb-2">Price</p>
 
-          <select name="price" value={search.price} onChange={handleChange}>
+          <select
+            name="price"
+            value={search.price}
+            onChange={handleChange}
+            className="w-full text-xs sm:text-sm"
+          >
             <option value="">Any Price</option>
             <option value="50000">Rs 50,000</option>
             <option value="100000">Rs 100,000</option>
@@ -180,10 +192,10 @@ const Searchbar = () => {
 
         {/* BUTTON */}
 
-        <div>
+        <div className="w-full md:w-auto">
           <button
             onClick={handleSearch}
-            className="bg-black text-white px-5 py-2 rounded-full mt-5"
+            className="bg-black text-white px-4 sm:px-5 py-2 rounded-full w-full md:w-auto text-xs sm:text-sm mt-2 md:mt-5"
           >
             Search
           </button>

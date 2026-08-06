@@ -1,14 +1,42 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../Components/AuthContext";
+import img1 from "../assets/whiteimg.png";
+import img2 from "../assets/2.png";
+import img3 from "../assets/1.png";
+import img4 from "../assets/3.png";
 const Navbar = () => {
   const [islogin, setisLogin] = useState(false);
+
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { login, setLogin } = useAuth();
+  const location = useLocation();
+  const isLanding = location.pathname === "/";
+
+  const [scrolled, setScrolled] = useState(!isLanding);
+  useEffect(() => {
+    if (!isLanding) {
+      setScrolled(true);
+      return;
+    }
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isLanding]);
   const handleLogout = async () => {
     try {
       const res = await axios.post(
@@ -28,21 +56,41 @@ const Navbar = () => {
   };
 
   return (
-    <nav className=" sticky top-0 z-50 w-full  px-4 sm:px-6 py-3 md:py-0 flex flex-col sm:flex-row items-center justify-between bg-red-200  gap-1   ">
+    <nav
+      className={`sticky top-0 z-50 w-full px-4 sm:px-6 py-2 md:py-0 flex flex-col sm:flex-row items-center justify-around gap-1 transition-all duration-300 ${
+        scrolled ? "bg-white text-black " : "bg-transparent text-white"
+      }`}
+    >
+      {" "}
       {/* <div className="flex  gap-6 items-center  "> */}
-      <div className="h-16  overflow-hidden">
-        <a href="/" className="text-l sm:text-xl">
-          <img src={logo} alt="Logo" className=" h-18 w-18 object-cover" />
+      <div className="h-16  overflow-hidden  flex items-center">
+        <a
+          href="/"
+          className="text-l sm:text-xl flex justify-center items-center  font-bold text-white"
+        >
+          <img
+            src={`${scrolled ? img3 : img1} `}
+            alt="Logo"
+            className=" h-10 w-10 object-contain "
+          />
+          <img
+            src={`${scrolled ? img4 : img2} `}
+            alt="Logo"
+            className=" h-16 w-32 object-cover  "
+          />
         </a>
       </div>
-      <Link to="/listing">Listing</Link>
+      <a href="#">Home</a>
+      <Link to="/listing">Properties</Link>
       <Link to="/dashboard">Dashboard</Link>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
       {!login ? (
         <button
           onClick={() => navigate("/auth")}
           className="sm:hidden flex items-center justify-center bg-black text-white rounded-full h-8 w-8"
         >
-          <i className="ri-user-line text-sm"></i>
+          <i className="ri-arrow-right-circle-line text-sm"></i>
         </button>
       ) : (
         <button
@@ -72,9 +120,11 @@ const Navbar = () => {
             <div className="relative">
               <div
                 onClick={() => setOpen(!open)}
-                className="flex bg-black rounded-full p-3 h-10 w-10 items-center justify-center cursor-pointer"
+                className="flex bg-transparent border  rounded-full p-3 h-10 w-10 items-center justify-center cursor-pointer"
               >
-                <i className="ri-user-line text-white"></i>
+                <i
+                  className={`ri-user-line ${scrolled ? "text-black" : "text-white"}`}
+                ></i>
               </div>
 
               {open && (
@@ -84,9 +134,19 @@ const Navbar = () => {
                       navigate("/dashboard");
                       setOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-2 text-black hover:bg-gray-100"
                   >
                     Dashboard
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      navigate("/post");
+                      setOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                  >
+                    Post Property
                   </button>
 
                   <button
@@ -103,7 +163,7 @@ const Navbar = () => {
             </div>
           ) : (
             <div
-              className="bg-black py-2 px-5 rounded-3xl text-white cursor-pointer hover:bg-gray-800"
+              className=" bg-linear-to-r from-orange-400 to-red-500 py-2 px-5 rounded-lg text-white cursor-pointer hover:bg-gray-800"
               onClick={() => navigate("/auth")}
             >
               Login

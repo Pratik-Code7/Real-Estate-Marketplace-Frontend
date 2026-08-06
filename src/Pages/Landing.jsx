@@ -3,67 +3,51 @@ import Navbar from "../Components/Navbar";
 import hero from "../assets/hero.png";
 import limg from "../assets/new limg.png";
 import { useEffect } from "react";
+import LandingIMG from "../assets/landingIMG.png";
 import Searchbar from "../Components/Searchbar";
 import video from "../assets/video.mp4";
 import List_item from "../Components/List_item";
 import InfoBox from "../Components/InfoBox";
 import ListItemSkeleton from "../Components/ListItemSkeleton";
+import axios from "axios";
 const Landing = () => {
+  const API_URL = "http://localhost:3000/api";
+  const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState([]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  }, []);
-  const [loading, setLoading] = useState(true);
-  const data = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
-      text: "Modern Luxury Villa",
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
-      text: "City Apartment",
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be",
-      text: "Cozy Family House",
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1613977257363-707ba9348227",
-      text: "Beachside Property",
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6",
-      text: "Mountain Cabin",
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1613977257363-707ba9348227",
-      text: "Beachside Property",
-    },
-  ];
-  return (
-    <>
-      <Navbar />
-      <div className="min-h-screen  min-w-full  ">
-        <div
-          className="min-h-[70vh] md:min-h-[95vh] w-full  lpage relative flex flex-col  justify-center gap-10  bg-cover bg-center  "
-          style={{ backgroundImage: `url(${limg})` }} // hero from olld img
-        >
-          <div className="absolute inset-0 bg-black/20"></div>
+    const fetchProperties = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/listing/all`);
+        setProperties(res.data.properties || []);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-          <div className="absolute z-10 flex flex-col justify-center gap-6  m-10 md:mx-20 lg:mx-20  tracking-wider ">
-            <div className="text-4xl  md:text-5xl font-bold leading-tight text-left">
+    fetchProperties();
+  }, []);
+  return (
+    <div className="relative">
+      <div className="sticky top-0 left-0 right-0 z-50">
+        <Navbar />
+      </div>
+      <div className="min-h-screen  min-w-full  md:-mt-16">
+        <div
+          className="min-h-[70vh] md:min-h-screen w-full  lpage relative flex flex-col  justify-center gap-10  bg-cover bg-center  "
+          style={{ backgroundImage: `url(${LandingIMG})` }} // hero from olld img
+        >
+          {/* <div className="absolute inset-0 bg-black/20"></div> */}
+
+          <div className="  flex flex-col justify-center gap-6  m-10  md:mx-20 lg:mx-20 mt-32  tracking-wider ">
+            <div className="text-4xl  md:text-5xl font-bold leading-tight text-white text-left">
               Find your next <br /> home in Nepal
             </div>
-            <p className="  md:text-xl  m-1 md:m-0 text-left">
+            <p className="  md:text-xl  m-1 md:m-0 text-white text-left">
               Buy, Sell, Rent properties with ease.
               <br />
               Trusted by thousands of users across Nepal.
@@ -72,22 +56,22 @@ const Landing = () => {
           </div>
         </div>
         <div className="min-h-screen w-full bg-gray-50">
-          <div className="flex flex-col justify-center items-center gap-5 p-4 md:p-10 text-2xl font-bold  ">
-            <h1 className="w-full text-center md:text-left  md:pl-14">
-              Featured Listing
-            </h1>
+          <div className="flex flex-col justify-center lg:mx-20 gap-1  p-4  md:p-10 text-2xl font-bold  ">
+            <div className="w-full flex flex-col justify-center items-center gap-3   md:p-1 text-2xl font-bold  ">
+              <h1 className=" w-full md:text-left text-lg">
+                HANDPICKED FOR YOU
+              </h1>
+              <h1 className="w-full  text-4xl  md:text-left  mb-5">
+                Featured Listing
+              </h1>
+            </div>
             <div className="listings grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 w-full max-w-7xl mx-auto">
               {loading
                 ? Array(6)
                     .fill(0)
                     .map((_, i) => <ListItemSkeleton key={i} />)
-                : data.map((item) => (
-                    <List_item
-                      key={item.id}
-                      id={item.id}
-                      image={item.image}
-                      text={item.text}
-                    />
+                : properties.map((property) => (
+                    <List_item key={property._id} property={property} />
                   ))}
               {/* {data.map((item) => (
                   <List_item
@@ -151,17 +135,17 @@ const Landing = () => {
               <h1>QUICK LINKS</h1>
               <ol className="flex flex-col gap-3  text-gray-700 ">
                 <li>
-                  <a href="/">Home</a>
+                  <a href="/Rent_UI/">Home</a>
                 </li>
                 <li>
-                  <a href="/">Buy</a>
+                  <a href="/Rent_UI/listing/">Buy</a>
                 </li>
                 <li>
-                  <a href="/">Rent</a>
+                  <a href="/Rent_UI/listing">Rent</a>
                 </li>
 
                 <li>
-                  <a href="/">Sell</a>
+                  <a href="/Rent_UI/listing">Sell</a>
                 </li>
               </ol>
             </div>
@@ -184,7 +168,7 @@ const Landing = () => {
           </div>
         </footer>
       </div>
-    </>
+    </div>
   );
 };
 

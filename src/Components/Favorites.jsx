@@ -1,59 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Fav_Comp from "./Fav_Comp";
 
 const Favorites = () => {
-  // const [like, setlike] = useState(false);
-  const properties = [
-    {
-      id: 1,
-      title: "Modern Apartment",
-      img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      id: 2,
-      title: "Luxury Villa",
-      img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      id: 3,
-      title: "Cozy Cottage",
-      img: "https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      id: 4,
-      title: "City Penthouse",
-      img: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      id: 5,
-      title: "Beach House",
-      img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-    },
-    {
-      id: 6,
-      title: "Mountain Cabin",
-      img: "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80",
-    },
-  ];
-  return (
-    <div className="dash-right h-full overflow-y-auto  w-full flex flex-col gap-10 ">
-      <Fav_Comp />
-      <div className="w-full h-24 p-20  bg-white  rounded-2xl flex justify-center items-center  gap-10">
-        <div className="bg-gray-100 rounded-full text-4xl  h-18 w-18 flex justify-center items-center">
-          <i class="ri-folder-open-fill"></i>
-        </div>
-        <div className="w-72">
-          <h1 className="text-sm md:text-md font-bold">
-            Save properties you love
-          </h1>
-          <p className="text-xs md:text-sm text-gray-600">
-            Click the heart icon on any property to save it for easy access
-            later
-          </p>
-        </div>
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const API_URL = "http://localhost:3000/api";
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/favorites/list`, {
+          withCredentials: true,
+        });
+        console.log("Favorites response:", res.data);
+        setFavorites(res.data.favorites || res.data);
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+        if (error.response?.status === 401) {
+          console.error("User not authenticated");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
+  const handleRemoveFavorite = async (favoriteId) => {
+    try {
+      await axios.delete(`${API_URL}/favorites/delete/${favoriteId}`, {
+        withCredentials: true,
+      });
+      setFavorites(favorites.filter((fav) => fav._id !== favoriteId));
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="dash-right h-full flex justify-center items-center">
+        <p>Loading favorites...</p>
       </div>
+    );
+  }
+
+  return (
+    <div className="dash-right h-full overflow-y-auto w-full flex flex-col gap-10">
+      {favorites.length > 0 ? (
+        <div className="flex flex-col gap-5">
+          {favorites.map((favorite) => (
+            <Fav_Comp
+              key={favorite._id}
+              favorite={favorite}
+              onRemove={handleRemoveFavorite}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="w-full h-24 p-20 bg-white rounded-2xl flex justify-center items-center gap-10">
+          <div className="bg-gray-100 rounded-full text-4xl h-18 w-18 flex justify-center items-center">
+            <i className="ri-folder-open-fill"></i>
+          </div>
+          <div className="w-72">
+            <h1 className="text-sm md:text-md font-bold">
+              Save properties you love
+            </h1>
+            <p className="text-xs md:text-sm text-gray-600">
+              Click the heart icon on any property to save it for easy access
+              later
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Favorites;
+

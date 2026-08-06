@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Fav_Comp from "../Components/Fav_Comp";
 import Navbar from "../Components/Navbar";
-
+import ListingSkeleton from "../Components/ListingSkeleton";
+import axios from "axios";
 const Listing = () => {
   const [searchParams] = useSearchParams();
 
-  // Filter State
   const [filters, setFilters] = useState({
     location: "",
     propertyType: "All",
@@ -16,15 +16,17 @@ const Listing = () => {
     facilities: [],
   });
 
-  // Temp state (form inputs before "Apply" is clicked)
   const [tempFilters, setTempFilters] = useState(filters);
 
-  // Sync state with URL search params when they change
+  // NEW: data state
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     const loc = searchParams.get("location") || "";
     let pType = searchParams.get("propertyType") || "All";
 
-    // Map Searchbar selections to corresponding Listing types
     if (pType === "Office Space") {
       pType = "Office";
     } else if (pType === "Residential House") {
@@ -52,6 +54,45 @@ const Listing = () => {
     setFilters(newFilters);
     setTempFilters(newFilters);
   }, [searchParams]);
+
+  // NEW: fetch properties whenever APPLIED filters change
+  useEffect(() => {
+    const fetchProperties = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const params = {};
+
+        if (filters.location) params.location = filters.location;
+        if (filters.propertyType !== "All")
+          params.propertyType = filters.propertyType;
+        if (filters.price) params.price = filters.price;
+        if (filters.bedrooms !== "Any") params.bedrooms = filters.bedrooms;
+        if (filters.bathrooms !== "Any") params.bathrooms = filters.bathrooms;
+        if (filters.facilities.length > 0)
+          params.facilities = filters.facilities.join(",");
+
+        const res = await axios.get("http://localhost:3000/api/property/list", {
+          params,
+          withCredentials: true,
+        });
+
+        const data = res.data;
+
+        // Adjust based on your actual API response shape
+        setProperties(Array.isArray(data) ? data : data.properties || []);
+      } catch (err) {
+        console.error("Failed to fetch properties:", err);
+        setError("Could not load properties. Please try again.");
+        setProperties([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, [filters]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,11 +131,9 @@ const Listing = () => {
 
   return (
     <>
-      <Navbar />
-
       <div className="bg-gray-100 min-h-screen">
+        <Navbar />
         <div className="max-w-7xl mx-auto px-4 py-6">
-          {/* Back Button */}
           <button
             onClick={() => window.history.back()}
             className="text-sm text-gray-600 hover:text-black flex items-center gap-1 bg-white px-3 py-1 rounded-lg shadow-sm"
@@ -108,10 +147,8 @@ const Listing = () => {
               <h2 className="text-xl font-semibold mb-6">Filter Properties</h2>
 
               <form onSubmit={handleApply} className="flex flex-col gap-5">
-                {/* Location */}
                 <div className="flex flex-col gap-2">
                   <label>Location</label>
-
                   <input
                     type="text"
                     name="location"
@@ -122,10 +159,8 @@ const Listing = () => {
                   />
                 </div>
 
-                {/* Property Type */}
                 <div className="flex flex-col gap-2">
                   <label>Property Type</label>
-
                   <select
                     name="propertyType"
                     value={tempFilters.propertyType}
@@ -146,14 +181,11 @@ const Listing = () => {
                   </select>
                 </div>
 
-                {/* Price */}
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between">
                     <label>Price Range</label>
-
                     <span>Rs {tempFilters.price}</span>
                   </div>
-
                   <input
                     type="range"
                     name="price"
@@ -165,10 +197,8 @@ const Listing = () => {
                   />
                 </div>
 
-                {/* Bedrooms */}
                 <div className="flex flex-col gap-2">
                   <label>Bedrooms</label>
-
                   <select
                     name="bedrooms"
                     value={tempFilters.bedrooms}
@@ -183,10 +213,8 @@ const Listing = () => {
                   </select>
                 </div>
 
-                {/* Bathrooms */}
                 <div className="flex flex-col gap-2">
                   <label>Bathrooms</label>
-
                   <select
                     name="bathrooms"
                     value={tempFilters.bathrooms}
@@ -200,10 +228,8 @@ const Listing = () => {
                   </select>
                 </div>
 
-                {/* Facilities */}
                 <div className="flex flex-col gap-3">
                   <label>Facilities</label>
-
                   <div className="grid grid-cols-2 gap-2">
                     {["Parking", "Swimming Pool", "Gym", "WiFi"].map((item) => (
                       <label key={item} className="flex items-center gap-2">
@@ -218,7 +244,6 @@ const Listing = () => {
                   </div>
                 </div>
 
-                {/* Buttons */}
                 <div className="flex gap-3">
                   <button
                     type="submit"
@@ -226,7 +251,6 @@ const Listing = () => {
                   >
                     Apply
                   </button>
-
                   <button
                     type="button"
                     onClick={handleReset}
@@ -239,8 +263,28 @@ const Listing = () => {
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="lg:col-span-3 h-screen overflow-y-auto">
-              <Fav_Comp filters={filters} />
+            <div className="lg:col-span-3 h-screen overflow-y-auto flex flex-col gap-4">
+              {loading && (
+                <div className="flex flex-col gap-4">
+                  {Array(6)
+                    .fill(0)
+                    .map((_, i) => <ListingSkeleton key={i} />)}
+                </div>
+              )}
+
+              {error && <p className="text-center text-red-500">{error}</p>}
+
+              {!loading && !error && properties.length === 0 && (
+                <p className="text-center text-gray-500">
+                  No properties match your filters.
+                </p>
+              )}
+
+              {!loading &&
+                !error &&
+                properties.map((prop) => (
+                  <Fav_Comp key={prop._id} property={prop} />
+                ))}
             </div>
           </div>
         </div>

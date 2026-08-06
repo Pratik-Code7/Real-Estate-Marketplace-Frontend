@@ -88,7 +88,7 @@ const Property = () => {
 
                 {/* Location */}
                 <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
-                  <i className="ri-map-pin-2-fill"></i>
+                  <i className="ri-map-pin-2-fill "></i>
                   <span>Lorem ipsum dolor sit amet</span>
                 </div>
 
