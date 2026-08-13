@@ -7,13 +7,15 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [login, setLogin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
 
   const checkLogin = async () => {
     try {
-      await axios.get("http://localhost:3000/api/auth/", {
+      const res = await axios.get("http://localhost:3000/api/auth/", {
         withCredentials: true,
       });
       setLogin(true);
+      setRole(res.data.user.role);
     } catch {
       setLogin(false);
     } finally {
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ login, setLogin, loading }}>
+    <AuthContext.Provider value={{ login, setLogin, loading, role }}>
       {children}
     </AuthContext.Provider>
   );

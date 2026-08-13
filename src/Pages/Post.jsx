@@ -76,6 +76,10 @@ const Post = () => {
       toast.error("Please enter a price");
       return false;
     }
+    if (!property.location || property.location === "Select City") {
+      toast.error("Please select a city");
+      return false;
+    }
     if (images.length === 0) {
       toast.error("Please select at least one image");
       return false;
@@ -148,7 +152,9 @@ const Post = () => {
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm">Property Title</label>
+                <label className="text-sm">
+                  Property Title <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   placeholder="Enter property title"
@@ -160,7 +166,9 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">Property Type</label>
+                <label className="text-sm">
+                  Property Type <span className="text-red-500">*</span>
+                </label>
                 <select
                   className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                   name="type"
@@ -176,7 +184,9 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">Property Status</label>
+                <label className="text-sm">
+                  Property Status <span className="text-red-500">*</span>
+                </label>
                 <select
                   className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                   name="status"
@@ -209,7 +219,9 @@ const Post = () => {
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm">Price</label>
+                <label className="text-sm">
+                  Price <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="number"
                   name="price"
@@ -249,7 +261,9 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">City</label>
+                <label className="text-sm">
+                  City <span className="text-red-500">*</span>
+                </label>
                 <select
                   className="w-full mt-1 border border-gray-500 rounded-lg p-2"
                   name="location"
@@ -385,7 +399,9 @@ const Post = () => {
 
           {/* PROPERTY IMAGES */}
           <div className="bg-white shadow-2xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg mb-4">Property Images</h2>
+            <h2 className="font-semibold text-lg mb-4">
+              Property Images <span className="text-red-500">*</span>
+            </h2>
 
             <div className="border-2 border-dashed rounded-xl p-10 text-center">
               <input
@@ -393,12 +409,44 @@ const Post = () => {
                 accept="image/*"
                 multiple
                 className="mb-3"
-                onChange={(e) => setImages([...e.target.files])}
+                onChange={(e) => {
+                  const selectedFiles = Array.from(e.target.files);
+
+                  setImages((prev) => [...prev, ...selectedFiles]);
+
+                  // Reset input so the same image can be selected again
+                  e.target.value = "";
+                }}
               />
               {images.length > 0 && (
                 <p className="text-sm text-gray-600">
                   {images.length} image{images.length > 1 ? "s" : ""} selected
                 </p>
+              )}
+              {images.length > 0 && (
+                <div className="flex flex-wrap gap-3 mt-4">
+                  {images.map((image, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(image)}
+                        alt={`Property ${index + 1}`}
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setImages((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          )
+                        }
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -445,6 +493,23 @@ const Post = () => {
               </div>
             </div>
           </div> */}
+
+          {/* TERMS & CONDITIONS */}
+          <div className="bg-white shadow-2xl rounded-xl p-5">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="agreedToTerms"
+                checked={property.agreedToTerms}
+                onChange={handleChange}
+                className="mt-1"
+              />
+              <span className="text-sm">
+                I agree to the Terms & Conditions{" "}
+                <span className="text-red-500">*</span>
+              </span>
+            </label>
+          </div>
 
           {/* BUTTONS */}
           <div className="flex justify-between">

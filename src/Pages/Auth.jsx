@@ -105,10 +105,10 @@ const Auth = () => {
   };
   return (
     <div className="flex h-screen w-screen bg-gray-100 items-center justify-center p-8">
-      <div className="flex w-full max-w-6xl h-[90vh] overflow-hidden rounded-3xl shadow-2xl">
-        <div className="login-section w-2/5 flex items-center justify-center p-8 md:p-16">
-          <div className="w-full max-w-md">
-            <div className="textbox flex flex-col gap-1 mb-8">
+      <div className="flex w-full max-w-6xl h-[65vh] sm:h-[90vh] overflow-hidden rounded-3xl  shadow-2xl">
+        <div className="login-section w-full   md:w-2/5  flex items-center justify-center p-8 md:p-16">
+          <div className="w-full max-w-md ">
+            <div className="textbox flex flex-col gap-1 mb-2 sm:mb-8 ">
               <h1 className="font-bold text-3xl md:text-4xl">Welcome Back</h1>
               <p className="text-lg text-gray-600">Login to Continue</p>
             </div>
@@ -176,11 +176,11 @@ const Auth = () => {
             </form>
           </div>
         </div>
-        <div className="image-section w-3/5 hidden md:flex items-center justify-center bg-gray-50">
+        <div className=" hidden  md:w-3/5  md:flex items-center justify-center bg-gray-50">
           <img
             src={landingIMG}
             alt="Login Illustration"
-            className="w-full h-full object-cover"
+            className=" w-full h-full object-cover"
           />
         </div>
       </div>

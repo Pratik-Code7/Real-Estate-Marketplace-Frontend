@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Fav_Comp from "./Fav_Comp";
+import FavoriteSkeleton from "./FavoriteSkeleton";
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState([]);
@@ -41,8 +42,8 @@ const Favorites = () => {
 
   if (loading) {
     return (
-      <div className="dash-right h-full flex justify-center items-center">
-        <p>Loading favorites...</p>
+      <div className="dash-right h-full w-full flex flex-col gap-5">
+        {Array(3).fill(0).map((_, i) => <FavoriteSkeleton key={i} />)}
       </div>
     );
   }

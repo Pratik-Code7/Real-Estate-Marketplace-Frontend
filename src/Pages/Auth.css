@@ -3,7 +3,9 @@ input {
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 input:focus {
@@ -32,7 +34,9 @@ p {
   border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 12px;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
 }
 
 .gbtn:hover {
@@ -46,22 +50,22 @@ p {
   background-color: #e5e7eb;
 }
 
-.login-section {
+/* .login-section {
   width: 40%;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: white;
   overflow-y: auto;
-}
+} */
 
-.image-section {
+/* .image-section {
   width: 60%;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f9fafb;
-}
+} */
 
 label {
   font-weight: 500;

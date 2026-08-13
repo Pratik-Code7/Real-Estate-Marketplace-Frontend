@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import Auth from "./Pages/Auth";
 import DashBoard from "./Pages/DashBoard";
 import Listing from "./Pages/Listing";
+import AdminDashboard from "./admin/AdminDashboard";
 import Post from "./Pages/post";
 import NotFoundPage from "./Components/NotFoundPage";
 import Signup from "./Pages/Signup";
@@ -16,6 +17,14 @@ const App = () => {
     <>
       <ToastContainer theme="light" />
       <Routes>
+        <Route
+          path="/admin"
+          element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          }
+        />
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/signup" element={<Signup />} />

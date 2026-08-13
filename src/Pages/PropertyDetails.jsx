@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
-
+import loading from "../assets/wmremove-transformed.mp4";
 import { useAuth } from "../Components/AuthContext";
 
 import { toast } from "react-toastify";
 
-
-
 const PropertyDetails = () => {
-
   const { id } = useParams();
 
   const navigate = useNavigate();
@@ -27,97 +24,95 @@ const PropertyDetails = () => {
   const [favoriteId, setFavoriteId] = useState(null);
 
   const API_URL = "http://localhost:3000/api";
+  const hasIncrementedView = useRef(false);
+  const handleShare = async () => {
+    const shareData = {
+      title: property.title,
+      text: `Check out this property on Nestra: ${property.title}`,
+      url: window.location.href,
+    };
 
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Property link copied!");
+      }
+    } catch (error) {
+      // User closed/cancelled the share menu
+      if (error.name !== "AbortError") {
+        console.error("Share failed:", error);
+        toast.error("Unable to share property");
+      }
+    }
+  };
+  useEffect(() => {
+    const fetchProperty = async (incrementView = true) => {
+      try {
+        const endpoint = incrementView ? `${API_URL}/property/${id}` : `${API_URL}/property/${id}/view`;
+        const res = await axios.get(endpoint);
+        setProperty(res.data);
+      } catch (error) {
+        console.error("Error fetching property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    // Only increment view once per session
+    if (!hasIncrementedView.current) {
+      hasIncrementedView.current = true;
+      fetchProperty(true);
+    } else {
+      fetchProperty(false);
+    }
+  }, [id, API_URL]);
 
   useEffect(() => {
-
-    const fetchProperty = async () => {
+    const checkFavoriteStatus = async () => {
+      if (!login || !id) return;
 
       try {
+        const res = await axios.get(`${API_URL}/favorites/list`, {
+          withCredentials: true,
+        });
 
-        const res = await axios.get(`${API_URL}/property/${id}`);
+        const favorites = res.data;
 
-        setProperty(res.data);
+        const favorite = favorites.find((item) => item.property?._id === id);
 
-      } catch (error) {
-
-        console.error("Error fetching property:", error);
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-    };
-
-
-
-    fetchProperty();
-
-  }, [id]);
-
-
-
-  useEffect(() => {
-
-    const checkFavoriteStatus = async () => {
-
-      if (login && id) {
-
-        try {
-
-          const res = await axios.get(`${API_URL}/favorite/check/${id}`, {
-
-            withCredentials: true,
-
-          });
-
-          setIsFavorite(res.data.isFavorite);
-
-          setFavoriteId(res.data.favoriteId);
-
-        } catch (error) {
-
-          console.error("Error checking favorite status:", error);
-
+        if (favorite) {
+          setIsFavorite(true);
+          setFavoriteId(favorite._id);
+        } else {
+          setIsFavorite(false);
+          setFavoriteId(null);
         }
-
+      } catch (error) {
+        console.error(
+          "Error checking favorite:",
+          error.response?.data || error,
+        );
       }
-
     };
-
-
 
     checkFavoriteStatus();
-
   }, [id, login]);
 
-
-
   const handleFavoriteToggle = async () => {
-
     if (!login) {
-
       toast.error("Please login to save properties");
 
       navigate("/auth");
 
       return;
-
     }
 
-
-
     try {
-
       if (isFavorite) {
-
-        await axios.delete(`${API_URL}/favorite/remove/${id}`, {
-
+        await axios.delete(`${API_URL}/favorites/remove/${id}`, {
           withCredentials: true,
-
         });
 
         setIsFavorite(false);
@@ -125,17 +120,13 @@ const PropertyDetails = () => {
         setFavoriteId(null);
 
         toast.success("Removed from favorites");
-
       } else {
-
         const res = await axios.post(
-
-          `${API_URL}/favorite/add`,
+          `${API_URL}/favorites/add`,
 
           { propertyId: id },
 
-          { withCredentials: true }
-
+          { withCredentials: true },
         );
 
         setIsFavorite(true);
@@ -143,640 +134,388 @@ const PropertyDetails = () => {
         setFavoriteId(res.data.favorite._id);
 
         toast.success("Added to favorites");
-
       }
-
     } catch (error) {
-
       console.error("Error toggling favorite:", error);
 
       toast.error(error.response?.data?.message || "Error updating favorites");
-
     }
-
   };
 
-
-
   if (loading) {
-
     return (
-
-      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
-
-        Loading...
-
-      </div>
-
+      <video
+        autoPlay
+        loop
+        src={loading}
+        className="w-64 h-64 md:w-96 md:h-96 object-cover"
+        muted
+      />
     );
-
   }
-
-
 
   if (!property) {
-
     return (
-
       <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
-
         Property Not Found
-
       </div>
-
     );
-
   }
 
-
-
   return (
-
     <div className="bg-gray-100 min-h-screen">
-
       {/* ================= HERO ================= */}
 
       <div className="relative h-[500px] overflow-hidden">
-
         <img
-
           src={property.images?.[0] || "https://via.placeholder.com/800x500"}
-
           alt={property.title}
-
           className="w-full h-full object-cover"
-
         />
 
-
-
         <div className="absolute inset-0 bg-black/40"></div>
-
-
 
         {/* Top Buttons */}
 
         <div className="absolute top-6 left-6 right-6 flex justify-between">
-
           <button
-
             onClick={() => navigate(-1)}
-
             className="w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition"
-
           >
-
             <i className="ri-arrow-left-line text-xl"></i>
-
           </button>
 
-
-
           <div className="flex gap-3">
+            <button
+              onClick={handleFavoriteToggle}
+              className={`w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition ${isFavorite ? "text-red-500" : ""}`}
+            >
+              <i
+                className={`${isFavorite ? "ri-heart-fill" : "ri-heart-line"} text-xl`}
+              ></i>
+            </button>
 
             <button
-
-              onClick={handleFavoriteToggle}
-
-              className={`w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition ${isFavorite ? "text-red-500" : ""}`}
-
+              onClick={handleShare}
+              className="w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition"
+              title="Share property"
             >
-
-              <i className={`${isFavorite ? "ri-heart-fill" : "ri-heart-line"} text-xl`}></i>
-
-            </button>
-
-
-
-            <button className="w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition">
-
               <i className="ri-share-line text-xl"></i>
-
             </button>
-
           </div>
-
         </div>
-
-
 
         {/* Bottom Info */}
 
         <div className="absolute bottom-10 left-10 text-white">
-
           <span className="bg-white text-black px-4 py-2 rounded-full font-medium">
-
             {property.type}
-
           </span>
-
-
 
           <h1 className="text-5xl font-bold mt-5">{property.title}</h1>
 
-
-
           <div className="flex items-center gap-2 mt-3 text-lg">
-
             <i className="ri-map-pin-2-fill"></i>
 
             <span>{property.location}, Nepal</span>
-
           </div>
-
         </div>
-
       </div>
-
-
 
       {/* ================= IMAGE GALLERY ================= */}
 
       <div className="max-w-7xl mx-auto px-6 -mt-12 relative z-10">
-
         <div className="bg-white rounded-3xl shadow-lg p-5">
-
           <div className="grid grid-cols-4 gap-4">
-
             {property.images?.slice(0, 4).map((img, index) => (
-
               <img
-
                 key={index}
-
                 src={img}
-
                 alt=""
-
                 className="h-36 w-full object-cover rounded-2xl cursor-pointer hover:scale-105 duration-300"
-
               />
-
             ))}
-
           </div>
-
         </div>
-
       </div>
-
-
 
       {/* ================= MAIN CONTENT ================= */}
 
       <div className="max-w-7xl mx-auto px-6 py-10">
-
         <div className="grid lg:grid-cols-3 gap-8">
-
           {/* ================= LEFT COLUMN ================= */}
 
           <div className="lg:col-span-2">
-
             {/* Header */}
 
             <div className="bg-white rounded-3xl shadow-sm p-8">
-
               <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
-
                 <div>
-
                   <h2 className="text-4xl font-bold">{property.title}</h2>
 
-
-
                   <div className="flex items-center gap-2 mt-3 text-gray-500">
-
                     <i className="ri-map-pin-2-fill text-lg"></i>
 
                     <span>{property.location}, Nepal</span>
-
                   </div>
 
-
-
                   <div className="flex items-center gap-5 mt-5">
-
                     <div className="flex items-center gap-2">
-
                       <i className="ri-star-fill text-yellow-400"></i>
 
                       <span className="font-semibold">4.8</span>
-
                     </div>
 
-
-
                     <span className="text-gray-400">(23 Reviews)</span>
-
                   </div>
-
                 </div>
 
-
-
                 <div className="text-left lg:text-right">
-
                   <h2 className="text-5xl font-bold">Rs {property.price}</h2>
 
                   <p className="text-gray-500 mt-2">per month</p>
-
                 </div>
-
               </div>
-
             </div>
-
-
 
             {/* Stats */}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-8">
-
               <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-
                 <i className="ri-hotel-bed-fill text-4xl"></i>
 
                 <p className="mt-4 text-gray-500">Bedrooms</p>
 
                 <h3 className="font-bold text-2xl">{property.bedroom || 0}</h3>
-
               </div>
 
-
-
               <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-
                 <i className="ri-showers-fill text-4xl"></i>
 
                 <p className="mt-4 text-gray-500">Bathrooms</p>
 
                 <h3 className="font-bold text-2xl">{property.bathroom || 0}</h3>
-
               </div>
 
-
-
               <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-
                 <i className="ri-ruler-2-line text-4xl"></i>
 
                 <p className="mt-4 text-gray-500">Area</p>
 
-                <h3 className="font-bold text-2xl">{property.area || 0} sqft</h3>
-
+                <h3 className="font-bold text-2xl">
+                  {property.area || 0} sqft
+                </h3>
               </div>
 
-
-
               <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-
                 <i className="ri-home-4-fill text-4xl"></i>
 
                 <p className="mt-4 text-gray-500">Type</p>
 
                 <h3 className="font-bold text-2xl">{property.type}</h3>
-
               </div>
-
             </div>
-
-
 
             {/* Description */}
 
             <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-
               <h2 className="text-2xl font-bold mb-6">Description</h2>
 
               <p className="text-gray-600 leading-8">{property.description}</p>
-
             </div>
-
-
 
             {/* Amenities */}
 
             <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-
               <h2 className="text-2xl font-bold mb-6">Amenities</h2>
 
-
-
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-
                 {property.facilities?.map((item) => (
-
                   <div
-
                     key={item}
-
                     className="border rounded-2xl p-5 flex items-center gap-4 hover:bg-black hover:text-white duration-300 cursor-pointer"
-
                   >
-
                     {item === "Parking" && (
-
                       <i className="ri-parking-box-fill text-2xl"></i>
-
                     )}
-
-
 
                     {item === "WiFi" && (
-
                       <i className="ri-wifi-fill text-2xl"></i>
-
                     )}
-
-
 
                     {item === "Swimming Pool" && (
-
                       <i className="ri-water-flash-fill text-2xl"></i>
-
                     )}
-
-
 
                     {item === "Gym" && (
-
                       <i className="ri-heart-pulse-fill text-2xl"></i>
-
                     )}
 
-
-
                     <span className="font-medium">{item}</span>
-
                   </div>
-
                 ))}
-
               </div>
-
             </div>
-
-
 
             {/* Property Details */}
 
             <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-
               <h2 className="text-2xl font-bold mb-6">Property Details</h2>
 
-
-
               <div className="grid grid-cols-2 gap-6">
-
                 <div>
-
                   <p className="text-gray-500">Property Type</p>
 
                   <h3 className="font-semibold mt-1">{property.type}</h3>
-
                 </div>
 
-
-
                 <div>
-
                   <p className="text-gray-500">Status</p>
 
-                  <h3 className="font-semibold mt-1">{property.status || "Available"}</h3>
-
+                  <h3 className="font-semibold mt-1">
+                    {property.status || "Available"}
+                  </h3>
                 </div>
 
-
-
                 <div>
-
                   <p className="text-gray-500">Bedrooms</p>
 
-                  <h3 className="font-semibold mt-1">{property.bedroom || 0}</h3>
-
+                  <h3 className="font-semibold mt-1">
+                    {property.bedroom || 0}
+                  </h3>
                 </div>
 
-
-
                 <div>
-
                   <p className="text-gray-500">Bathrooms</p>
 
-                  <h3 className="font-semibold mt-1">{property.bathroom || 0}</h3>
-
+                  <h3 className="font-semibold mt-1">
+                    {property.bathroom || 0}
+                  </h3>
                 </div>
 
-
-
                 <div>
-
                   <p className="text-gray-500">Area</p>
 
-                  <h3 className="font-semibold mt-1">{property.area || 0} sqft</h3>
-
+                  <h3 className="font-semibold mt-1">
+                    {property.area || 0} sqft
+                  </h3>
                 </div>
-
-
 
                 <div>
-
                   <p className="text-gray-500">Negotiable</p>
 
-                  <h3 className="font-semibold mt-1">{property.negotiable ? "Yes" : "No"}</h3>
-
+                  <h3 className="font-semibold mt-1">
+                    {property.negotiable ? "Yes" : "No"}
+                  </h3>
                 </div>
-
               </div>
-
             </div>
-
-
 
             {/* Location */}
 
             <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-
               <h2 className="text-2xl font-bold mb-6">Location</h2>
 
-
-
               <div className="rounded-2xl overflow-hidden">
-
                 <iframe
-
                   title="map"
-
                   src={`https://maps.google.com/maps?q=${property.location},Nepal&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-
                   className="w-full h-80"
-
                 />
-
               </div>
-
             </div>
-
           </div>
 
           {/* End of Left Column */}
 
-
-
           {/* ================= RIGHT SIDEBAR ================= */}
 
           <div>
-
             <div className="sticky top-8 space-y-6">
-
               {/* Price Card */}
 
               <div className="bg-white rounded-3xl shadow-sm p-7">
-
                 <p className="text-gray-500">Monthly Rent</p>
-
-
 
                 <h2 className="text-4xl font-bold mt-2">Rs {property.price}</h2>
 
-
-
                 <p className="text-gray-400">/ month</p>
 
-
-
                 <button className="w-full mt-8 bg-black text-white py-4 rounded-xl hover:bg-gray-800 duration-300">
-
                   Contact Owner
-
                 </button>
-
-
 
                 <button className="w-full mt-3 border py-4 rounded-xl hover:bg-gray-100 duration-300">
-
                   <i className="ri-whatsapp-line mr-2"></i>
-
                   WhatsApp
-
                 </button>
-
-
 
                 <button
-
                   onClick={handleFavoriteToggle}
-
                   className={`w-full mt-3 border py-4 rounded-xl hover:bg-gray-100 duration-300 ${isFavorite ? "text-red-500 border-red-200" : ""}`}
-
                 >
-
-                  <i className={`${isFavorite ? "ri-heart-fill" : "ri-heart-line"} mr-2`}></i>
+                  <i
+                    className={`${isFavorite ? "ri-heart-fill" : "ri-heart-line"} mr-2`}
+                  ></i>
 
                   {isFavorite ? "Saved" : "Save Property"}
-
                 </button>
-
               </div>
-
-
 
               {/* Owner Card */}
 
               <div className="bg-white rounded-3xl shadow-sm p-7">
-
                 <div className="flex items-center gap-4">
-
                   <img
-
                     src="https://i.pravatar.cc/100"
-
                     alt="Owner"
-
                     className="w-16 h-16 rounded-full"
-
                   />
 
-
-
                   <div>
-
                     <h3 className="font-bold">Property Owner</h3>
 
                     <p className="text-gray-500 text-sm">Verified Landlord</p>
-
                   </div>
-
                 </div>
 
-
-
                 <div className="mt-6 space-y-3">
-
                   <div className="flex justify-between">
-
                     <span className="text-gray-500">Listings</span>
 
                     <span className="font-semibold">18</span>
-
                   </div>
 
-
-
                   <div className="flex justify-between">
-
                     <span className="text-gray-500">Rating</span>
 
                     <span className="font-semibold">⭐ 4.9</span>
-
                   </div>
 
-
-
                   <div className="flex justify-between">
-
                     <span className="text-gray-500">Response</span>
 
                     <span className="font-semibold text-green-600">5 mins</span>
-
                   </div>
-
                 </div>
-
               </div>
-
-
 
               {/* Report Card */}
 
               <div className="bg-white rounded-3xl shadow-sm p-7">
-
                 <button className="w-full text-red-500 border border-red-200 py-3 rounded-xl hover:bg-red-50 duration-300">
-
                   <i className="ri-flag-line mr-2"></i>
-
                   Report Listing
-
                 </button>
-
               </div>
-
             </div>
-
           </div>
 
           {/* End of Right Sidebar */}
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 };
 
-
-
 export default PropertyDetails;
-

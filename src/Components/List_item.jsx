@@ -106,17 +106,17 @@ const List_item = ({ property }) => {
 
             <div className="flex flex-wrap gap-2 text-xs font-medium text-gray-600 ">
               {property.bedroom && (
-                <div className=" rounded-lg px-3 py-2">
+                <div className=" bg-gray-200 rounded-lg px-3 py-2">
                   {property.bedroom} Room
                 </div>
               )}
               {property.bathroom && (
-                <div className=" rounded-lg px-3 py-2">
+                <div className=" bg-gray-200 rounded-lg px-3 py-2">
                   {property.bathroom} Bath
                 </div>
               )}
               {property.area && (
-                <div className=" rounded-lg px-3 py-2">
+                <div className=" bg-gray-200   rounded-lg px-3 py-2">
                   {property.area} sqft
                 </div>
               )}

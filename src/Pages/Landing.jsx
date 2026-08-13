@@ -10,6 +10,13 @@ import List_item from "../Components/List_item";
 import InfoBox from "../Components/InfoBox";
 import ListItemSkeleton from "../Components/ListItemSkeleton";
 import axios from "axios";
+import aboutimg from "../assets/about_img.png";
+import about from "../Components/AboutNestra";
+import AboutNestra from "../Components/AboutNestra";
+import HowItWorks from "../Components/HowItWorks";
+import Stats from "../Components/Stats";
+import Testimonials from "../Components/Testimonials";
+import PropertyCTA from "../Components/PropertyCTA";
 const Landing = () => {
   const API_URL = "http://localhost:3000/api";
   const [loading, setLoading] = useState(true);
@@ -36,16 +43,17 @@ const Landing = () => {
       <div className="sticky top-0 left-0 right-0 z-50">
         <Navbar />
       </div>
-      <div className="min-h-screen  min-w-full  md:-mt-16">
+      <div className="min-h-screen  min-w-full -mt-20   md:-mt-16">
         <div
           className="min-h-[70vh] md:min-h-screen w-full  lpage relative flex flex-col  justify-center gap-10  bg-cover bg-center  "
           style={{ backgroundImage: `url(${LandingIMG})` }} // hero from olld img
         >
+          <div className="absolute z-0 inset-0 bg-linear-to-r from-black/50 to-transparent"></div>
           {/* <div className="absolute inset-0 bg-black/20"></div> */}
-
-          <div className="  flex flex-col justify-center gap-6  m-10  md:mx-20 lg:mx-20 mt-32  tracking-wider ">
-            <div className="text-4xl  md:text-5xl font-bold leading-tight text-white text-left">
-              Find your next <br /> home in Nepal
+          <div className="  flex z-10 flex-col justify-center gap-6  m-10  md:mx-20 lg:mx-20 mt-32   ">
+            <div className="text-4xl  md:text-6xl font-bold leading-tight text-white text-left">
+              Find your next <br /> home in{" "}
+              <span className="text-[#e8b75c] font-bold">Nepal</span>
             </div>
             <p className="  md:text-xl  m-1 md:m-0 text-white text-left">
               Buy, Sell, Rent properties with ease.
@@ -83,8 +91,11 @@ const Landing = () => {
             </div>
           </div>
         </div>
-
-        <div className="info min-h-[50vh] w-full bg-gray-200 flex flex-col justify-center items-center py-16 gap-5 ">
+        {/* <div className="w-full ">
+          <img src={aboutimg} className="h-full w-full" alt="" />
+        </div> */}
+        <AboutNestra id="about" />
+        <div className="info min-h-[50vh] w-full bg-gray-100 flex flex-col justify-center items-center py-16 gap-5 ">
           <div className="txt-info font-bold text-2xl">Why Choose NESTRA?</div>
           <div className="box-info grid grid-cols-1 md:grid-cols-3 md:gap-20   ">
             <InfoBox />
@@ -118,9 +129,16 @@ const Landing = () => {
             </div>
           </div>
         </div>
+        <HowItWorks />
+
+        {/* <Stats /> */}
+
+        <Testimonials id="review" />
+
+        {/* <PropertyCTA /> */}
         <footer className=" w-full flex flex-col justify-center items-center  ">
           {/* <div className="h-0.5 w-full bg-gray-400 "></div> */}
-          <div className="  w-full flex flex-col md:flex-row justify-between items-start gap-10 p-6 md:p-10  ">
+          <div className="  w-full flex flex-col md:flex-row justify-between items-start bg-black/95 text-white gap-10 p-6 md:p-10  ">
             <div className="flex flex-col w-full md:w-1/3 gap-3 text-center md:text-left">
               <h1>
                 <b>NesTra</b>
@@ -133,7 +151,7 @@ const Landing = () => {
             </div>
             <div className="flex flex-col w-full md:w-1/4 gap-3 text-center md:text-center ">
               <h1>QUICK LINKS</h1>
-              <ol className="flex flex-col gap-3  text-gray-700 ">
+              <ol className="flex flex-col gap-3  text-gray-100 ">
                 <li>
                   <a href="/Rent_UI/">Home</a>
                 </li>
@@ -151,7 +169,7 @@ const Landing = () => {
             </div>
             <div className="flex flex-col w-full md:w-1/4 gap-3 text-center  ">
               <h1>LEGAL</h1>
-              <ol className="flex flex-col gap-3 text-gray-700 ">
+              <ol className="flex flex-col gap-3 text-gray-100 ">
                 <li>
                   <a href="/">Terms of Service</a>
                 </li>
@@ -163,8 +181,8 @@ const Landing = () => {
           </div>
           {/* <div className="h-0.5 w-full bg-gray-400"></div> */}
 
-          <div className="w-full h-20 bg-gray-100 flex justify-center items-center ">
-            <p>&copy; 2023 HamroRent. All rights reserved.</p>
+          <div className="w-full h-20 bg-black text-white flex justify-center items-center ">
+            <p>&copy; 2022 NesTra. All rights reserved.</p>
           </div>
         </footer>
       </div>

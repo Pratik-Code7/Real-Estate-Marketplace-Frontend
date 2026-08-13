@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import loading from "../assets/wmremove-transformed.mp4";
 const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
@@ -22,7 +22,17 @@ const ProtectedRoute = () => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center">
+        <video
+          autoPlay
+          loop
+          src={loading}
+          className="w-64 h-64 md:w-96 md:h-96 object-cover"
+          muted
+        ></video>
+      </div>
+    );
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/auth" replace />;
