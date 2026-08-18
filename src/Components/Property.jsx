@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BadgeCheck, CircleX, Clock3 } from "lucide-react";
 import ListingSkeleton from "./ListingSkeleton";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -101,6 +102,30 @@ const Property = () => {
     { title: "ACTIVE LISTINGS", value: loading ? 0 : activeListings },
   ];
 
+  const reviewStatus = (listingStatus) => {
+    if (["Verified", "Active"].includes(listingStatus)) {
+      return {
+        label: "Verified",
+        Icon: BadgeCheck,
+        className: "bg-green-100 text-green-700",
+      };
+    }
+
+    if (listingStatus === "Rejected") {
+      return {
+        label: "Rejected",
+        Icon: CircleX,
+        className: "bg-red-100 text-red-700",
+      };
+    }
+
+    return {
+      label: "Pending",
+      Icon: Clock3,
+      className: "bg-orange-100 text-orange-700",
+    };
+  };
+
   return (
     <div className="w-full h-full p-4 md:p-6 overflow-y-auto">
       {/* Header */}
@@ -159,11 +184,16 @@ const Property = () => {
       {!loading && !error && properties.length > 0 && (
         <div className="flex flex-col gap-5">
           {properties.map((property) => (
-            <div
-              key={property._id}
-              className="w-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-xs group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 cursor-pointer"
-              onClick={() => navigate(`/property/${property._id}`)}
-            >
+            (() => {
+              const status = reviewStatus(property.listingStatus);
+              const StatusIcon = status.Icon;
+
+              return (
+                <div
+                  key={property._id}
+                  className="w-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-xs group hover:shadow-lg hover:scale-[1.01] transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/property/${property._id}`)}
+                >
               {/* Image */}
               <div className="relative h-56 md:h-auto md:w-1/3 overflow-hidden">
                 <img
@@ -180,22 +210,42 @@ const Property = () => {
               </div>
 
               {/* Details */}
-              <div className="w-full flex flex-col justify-between p-4 md:p-6">
-                <div>
-                  {/* Title */}
-                  <div className="flex md:flex-row justify-between gap-2">
-                    <h2 className="text-lg font-bold">{property.title}</h2>
+                <div className="w-full flex flex-col justify-between p-4 md:p-6">
+                  <div>
+                    {/* Title */}
+                    <div className="flex md:flex-row justify-between gap-2">
+                    <div>
+                      <h2 className="text-lg font-bold">{property.title}</h2>
+                      <span
+                        className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${status.className}`}
+                      >
+                        <StatusIcon size={14} aria-hidden="true" />
+                        {status.label}
+                      </span>
+                    </div>
                     <p className="font-semibold">
-                      Rs {property.price}/
-                      {property.status === "For Rent" ? "mo" : ""}
+                      Rs {property.price}
+                      {property.status === "For Rent" ? "/mo" : ""}
                     </p>
                   </div>
 
                   {/* Features */}
-                  <div className="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
-                    {property.bedroom && <span>{property.bedroom} Bed</span>}
-                    {property.bathroom && <span>{property.bathroom} Bath</span>}
-                    {property.area && <span>{property.area} sqft</span>}
+                  <div className="flex flex-wrap gap-2 mt-2 text-xs font-medium text-gray-600">
+                    {property.bedroom && (
+                      <div className="bg-gray-200 rounded-lg px-3 py-2">
+                        {property.bedroom} Bed
+                      </div>
+                    )}
+                    {property.bathroom && (
+                      <div className="bg-gray-200 rounded-lg px-3 py-2">
+                        {property.bathroom} Bath
+                      </div>
+                    )}
+                    {property.area && (
+                      <div className="bg-gray-200 rounded-lg px-3 py-2">
+                        {property.area} sqft
+                      </div>
+                    )}
                   </div>
 
                   {/* Location */}
@@ -236,7 +286,9 @@ const Property = () => {
                   </div>
                 </div>
               </div>
-            </div>
+                </div>
+              );
+            })()
           ))}
         </div>
       )}

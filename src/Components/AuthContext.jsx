@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
       setRole(res.data.user.role);
     } catch {
       setLogin(false);
+      setRole(null);
     } finally {
       setLoading(false);
     }

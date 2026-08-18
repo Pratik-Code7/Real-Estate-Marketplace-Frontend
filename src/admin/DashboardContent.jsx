@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
+import Chart from "./Chart";
 function Role({ color, name, value, percent }) {
   return (
     <div className="flex items-center gap-2">
@@ -24,6 +25,12 @@ function DashboardContent({
   userRoles,
   onNavigateToSection,
 }) {
+  const navigate = useNavigate();
+
+  const handlePropertyClick = (propertyId) => {
+    navigate(`/property/${propertyId}`);
+  };
+
   return (
     <>
       {/* STAT CARDS */}
@@ -34,7 +41,7 @@ function DashboardContent({
           return (
             <div
               key={stat.title}
-              className="bg-white border border-gray-200 rounded-xl p-5"
+              className="bg-white border flex gap-5 border-gray-200 rounded-xl p-5"
             >
               <div className="flex items-center justify-between">
                 <div
@@ -43,10 +50,11 @@ function DashboardContent({
                   <Icon size={21} />
                 </div>
               </div>
+              <div>
+                <p className="text-sm text-gray-500 mt-0">{stat.title}</p>
 
-              <p className="text-sm text-gray-500 mt-4">{stat.title}</p>
-
-              <h3 className="text-2xl font-semibold mt-1">{stat.value}</h3>
+                <h3 className="text-2xl font-semibold mt-0">{stat.value}</h3>
+              </div>
 
               {/* <div className="flex items-center gap-1 mt-3 text-green-600 text-xs">
                 <ArrowUpRight size={14} />
@@ -63,87 +71,22 @@ function DashboardContent({
         {/* CHART */}
         <div className="bg-white border border-gray-200 rounded-xl p-5">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Overview</h3>
+            <div>
+              <h3 className="font-semibold text-gray-900">Overview</h3>
+              <p className="text-xs text-gray-400 mt-1">
+                Platform activity over time
+              </p>
+            </div>
 
-            <select className="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none">
+            {/* <select className="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none bg-white">
               <option>Last 30 days</option>
               <option>Last 7 days</option>
               <option>Last 6 months</option>
-            </select>
+            </select> */}
           </div>
 
-          <div className="flex flex-wrap gap-5 mt-5 text-xs">
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-purple-500" />
-              Users
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-blue-500" />
-              Properties
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-orange-400" />
-              Inquiries
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-green-500" />
-              Bookings
-            </span>
-          </div>
-
-          <div className="h-[260px] mt-6 relative">
-            {/* Horizontal lines */}
-            <div className="absolute inset-0 flex flex-col justify-between">
-              {[0, 1, 2, 3, 4].map((item) => (
-                <div key={item} className="border-t border-gray-100" />
-              ))}
-            </div>
-
-            {/* Fake chart */}
-            <svg
-              viewBox="0 0 800 250"
-              className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
-            >
-              <polyline
-                points="0,190 50,175 100,180 150,155 200,165 250,120 300,110 350,125 400,95 450,105 500,80 550,100 600,75 650,90 700,65 750,80 800,55"
-                fill="none"
-                stroke="#9333ea"
-                strokeWidth="3"
-              />
-
-              <polyline
-                points="0,210 50,200 100,205 150,190 200,195 250,175 300,180 350,160 400,170 450,150 500,160 550,140 600,155 650,135 700,145 750,120 800,130"
-                fill="none"
-                stroke="#3b82f6"
-                strokeWidth="3"
-              />
-
-              <polyline
-                points="0,225 50,220 100,215 150,220 200,205 250,210 300,195 350,205 400,190 450,200 500,180 550,190 600,175 650,185 700,165 750,170 800,155"
-                fill="none"
-                stroke="#f59e0b"
-                strokeWidth="3"
-              />
-
-              <polyline
-                points="0,240 50,235 100,238 150,230 200,235 250,220 300,225 350,215 400,220 450,205 500,215 550,200 600,210 650,195 700,205 750,190 800,195"
-                fill="none"
-                stroke="#22c55e"
-                strokeWidth="3"
-              />
-            </svg>
-          </div>
-
-          <div className="flex justify-between text-xs text-gray-400 mt-2">
-            <span>May 12</span>
-            <span>May 19</span>
-            <span>May 26</span>
-            <span>Jun 02</span>
-            <span>Jun 09</span>
+          <div className="mt-6 h-[260px]">
+            <Chart />
           </div>
         </div>
 
@@ -164,7 +107,8 @@ function DashboardContent({
               properties.map((property) => (
                 <div
                   key={property._id || property.title}
-                  className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-none"
+                  className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-none cursor-pointer hover:bg-gray-50 transition"
+                  onClick={() => handlePropertyClick(property._id)}
                 >
                   <img
                     src={property.image}
@@ -191,7 +135,7 @@ function DashboardContent({
 
                     <span
                       className={`inline-block mt-2 text-[10px] px-2 py-1 rounded-full ${
-                        property.status === "Active"
+                        property.status === "Verified"
                           ? "bg-green-100 text-green-700"
                           : "bg-orange-100 text-orange-700"
                       }`}

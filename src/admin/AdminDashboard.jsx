@@ -19,6 +19,8 @@ import PropertiesSection from "./PropertiesSection";
 import InquiriesSection from "./InquiriesSection";
 import ReviewsSection from "./ReviewsSection";
 import BookingsSection from "./BookingsSection";
+import FavoritesSection from "./FavoritesSection";
+import Post from "../Pages/Post";
 import ComingSoonSection from "./ComingSoonSection";
 
 function AdminDashboard() {
@@ -172,8 +174,8 @@ function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex">
       {/* SIDEBAR */}
-      <Sidebar 
-        activeSection={activeSection} 
+      <Sidebar
+        activeSection={activeSection}
         setActiveSection={setActiveSection}
         adminName={adminName}
       />
@@ -181,7 +183,7 @@ function AdminDashboard() {
       {/* MAIN */}
       <main className="lg:ml-[250px] flex-1 w-full">
         {/* TOPBAR */}
-        <Header 
+        <Header
           activeSection={activeSection}
           adminName={adminName}
           inquiryCount={inquiries.length}
@@ -190,7 +192,7 @@ function AdminDashboard() {
         {/* CONTENT */}
         <section className="p-5 lg:p-7 space-y-5">
           {activeSection === "Dashboard" && (
-            <DashboardContent 
+            <DashboardContent
               stats={stats}
               properties={properties}
               inquiries={inquiries}
@@ -205,21 +207,18 @@ function AdminDashboard() {
           {activeSection === "Inquiries" && <InquiriesSection />}
           {activeSection === "Bookings" && <BookingsSection />}
           {activeSection === "Reviews" && <ReviewsSection />}
-          {activeSection === "Reports" && <ComingSoonSection />}
-          {activeSection === "Categories" && <ComingSoonSection />}
-          {activeSection === "Locations" && <ComingSoonSection />}
-          {activeSection === "Facilities" && <ComingSoonSection />}
-          {activeSection === "Banners" && <ComingSoonSection />}
-          {activeSection === "Admins" && <ComingSoonSection />}
-          {activeSection === "Roles" && <ComingSoonSection />}
-          {activeSection === "Settings" && <ComingSoonSection />}
+          {activeSection === "Favorites" && <FavoritesSection />}
+          {activeSection === "Post Property" && <Post isAdmin={true} />}
+          {activeSection === "Categories" && <ComingSoonSection section="Categories" />}
+          {activeSection === "Locations" && <ComingSoonSection section="Locations" />}
+          {activeSection === "Facilities" && <ComingSoonSection section="Facilities" />}
+          {activeSection === "Banners" && <ComingSoonSection section="Banners" />}
+          {activeSection === "Admins" && <ComingSoonSection section="Admins" />}
+          {activeSection === "Roles" && <ComingSoonSection section="Roles" />}
+          {activeSection === "Settings" && <ComingSoonSection section="Settings" />}
         </section>
 
         {/* FOOTER */}
-        <footer className="px-7 py-5 border-t border-gray-200 text-xs text-gray-400 flex justify-between">
-          <span>© 2026 Nestra. All rights reserved.</span>
-          <span>Made with ❤️ in Nepal</span>
-        </footer>
       </main>
     </div>
   );

@@ -16,11 +16,78 @@ const Signup = () => {
     confirmPassword: "",
     role: "tenant",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const validateField = (name, value) => {
+    let errorMsg = "";
+    if (name === "name") {
+      const trimmed = value.trim();
+      if (!trimmed) errorMsg = "Full name is required";
+      else if (trimmed.length < 2) errorMsg = "Full name must be at least 2 characters";
+      else if (!/^[a-zA-Z\s]+$/.test(trimmed)) errorMsg = "Letters and spaces only";
+    } else if (name === "email") {
+      const trimmed = value.trim();
+      if (!trimmed) errorMsg = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) errorMsg = "Invalid email format";
+    } else if (name === "password") {
+      if (!value) errorMsg = "Password is required";
+      else if (value.length < 6) errorMsg = "Password must be at least 6 characters";
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) errorMsg = "Needs 1 uppercase, 1 lowercase & 1 number";
+    } else if (name === "confirmPassword") {
+      if (!value) errorMsg = "Please confirm your password";
+      else if (value !== formData.password) errorMsg = "Passwords do not match";
+    }
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
+  };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+    validateField(id, value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+    // Run all validations
+    const nameTrimmed = formData.name.trim();
+    const emailTrimmed = formData.email.trim();
+
+    const newErrors = {
+      name: !nameTrimmed
+        ? "Full name is required"
+        : nameTrimmed.length < 2
+        ? "Full name must be at least 2 characters"
+        : !/^[a-zA-Z\s]+$/.test(nameTrimmed)
+        ? "Letters and spaces only"
+        : "",
+      email: !emailTrimmed
+        ? "Email is required"
+        : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)
+        ? "Invalid email format"
+        : "",
+      password: !formData.password
+        ? "Password is required"
+        : formData.password.length < 6
+        ? "Password must be at least 6 characters"
+        : !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)
+        ? "Needs 1 uppercase, 1 lowercase & 1 number"
+        : "",
+      confirmPassword: !formData.confirmPassword
+        ? "Please confirm your password"
+        : formData.password !== formData.confirmPassword
+        ? "Passwords do not match"
+        : "",
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((err) => err !== "")) {
       return;
     }
 
@@ -28,8 +95,8 @@ const Signup = () => {
       const response = await axios.post(
         "http://localhost:3000/api/auth/register",
         {
-          name: formData.name,
-          email: formData.email,
+          name: nameTrimmed,
+          email: emailTrimmed,
           password: formData.password,
           role: formData.role,
         },
@@ -45,12 +112,15 @@ const Signup = () => {
         confirmPassword: "",
         role: "tenant",
       });
-
-      console.log(response.data);
+      setErrors({ name: "", email: "", password: "", confirmPassword: "" });
     } catch (error) {
       console.error(error);
-
-      toast.error(error.response?.data?.message || "Registration Failed");
+      const serverMsg = error.response?.data?.message || "Registration Failed";
+      if (serverMsg.toLowerCase().includes("email")) {
+        setErrors((prev) => ({ ...prev, email: serverMsg }));
+      } else {
+        toast.error(serverMsg);
+      }
     }
   };
 
@@ -65,8 +135,9 @@ const Signup = () => {
                 Sign up to get started
               </p>
             </div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
               <div className="flex flex-col gap-1">
+                {/* FULL NAME */}
                 <label htmlFor="name" className="text-sm font-medium">
                   Full Name
                 </label>
@@ -75,11 +146,14 @@ const Signup = () => {
                   id="name"
                   placeholder="Full Name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  required
+                  onChange={handleChange}
+                  className={`w-full ${errors.name ? "border-red-500 focus:ring-red-500" : ""}`}
                 />
+                {errors.name && (
+                  <span className="text-red-500 text-xs mt-0.5">{errors.name}</span>
+                )}
+
+                {/* EMAIL */}
                 <label htmlFor="email" className="text-sm font-medium mt-2">
                   Email
                 </label>
@@ -88,11 +162,14 @@ const Signup = () => {
                   id="email"
                   placeholder="Email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  required
+                  onChange={handleChange}
+                  className={`w-full ${errors.email ? "border-red-500 focus:ring-red-500" : ""}`}
                 />
+                {errors.email && (
+                  <span className="text-red-500 text-xs mt-0.5">{errors.email}</span>
+                )}
+
+                {/* PASSWORD */}
                 <label htmlFor="password" className="text-sm font-medium mt-2">
                   Password
                 </label>
@@ -101,12 +178,9 @@ const Signup = () => {
                     type={showPassword ? "text" : "password"}
                     id="password"
                     placeholder="Password"
-                    className="w-full"
                     value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                    required
+                    onChange={handleChange}
+                    className={`w-full ${errors.password ? "border-red-500 focus:ring-red-500" : ""}`}
                   />
                   <button
                     type="button"
@@ -120,7 +194,11 @@ const Signup = () => {
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <span className="text-red-500 text-xs mt-0.5">{errors.password}</span>
+                )}
 
+                {/* CONFIRM PASSWORD */}
                 <label
                   htmlFor="confirmPassword"
                   className="text-sm font-medium mt-2"
@@ -132,15 +210,9 @@ const Signup = () => {
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
                     placeholder="Confirm Password"
-                    className="w-full"
                     value={formData.confirmPassword}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                    required
+                    onChange={handleChange}
+                    className={`w-full ${errors.confirmPassword ? "border-red-500 focus:ring-red-500" : ""}`}
                   />
                   <button
                     type="button"
@@ -154,6 +226,9 @@ const Signup = () => {
                     )}
                   </button>
                 </div>
+                {errors.confirmPassword && (
+                  <span className="text-red-500 text-xs mt-0.5">{errors.confirmPassword}</span>
+                )}
 
                 <label className="text-sm font-medium mt-3">Select Role</label>
                 <div className="flex gap-6 mt-1">

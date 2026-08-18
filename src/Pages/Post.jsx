@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 const API_URL = "http://localhost:3000/api";
 
 const FACILITIES = [
@@ -39,7 +39,7 @@ const INITIAL_PROPERTY = {
   agreedToTerms: false,
 };
 
-const Post = () => {
+const Post = ({ isAdmin = false }) => {
   const [images, setImages] = useState([]);
   const [facilities, setFacilities] = useState([]);
   const [property, setProperty] = useState(INITIAL_PROPERTY);
@@ -112,11 +112,17 @@ const Post = () => {
         facilities,
       };
 
-      const res = await axios.post(`${API_URL}/property/add`, propertyData, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        isAdmin ? `${API_URL}/property/admin/add` : `${API_URL}/property/add`,
+        propertyData,
+        {
+          withCredentials: true,
+        },
+      );
 
-      toast.success(res.data.message || "Property published successfully");
+      toast.success(
+        res.data.message || "Property submitted for admin approval",
+      );
       setProperty(INITIAL_PROPERTY);
       setFacilities([]);
       setImages([]);
@@ -136,23 +142,23 @@ const Post = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <div className="space-y-5">
+      <div className="bg-white border border-gray-200 rounded-xl p-5">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-1">Post Property</h1>
-          <p className="text-gray-600">
-            Fill the form below to publish your property.
+          <h2 className="text-2xl font-bold mb-1">Post Property</h2>
+          <p className="text-gray-600 text-sm">
+            Fill the form below to submit your property for admin approval.
           </p>
         </div>
 
         <form className="space-y-6" onSubmit={publishProperty}>
           {/* BASIC DETAILS */}
-          <div className="bg-white shadow-2xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg mb-4">Basic Details</h2>
+          <div className="border border-gray-200 rounded-xl p-5">
+            <h3 className="font-semibold text-lg mb-4">Basic Details</h3>
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm">
+                <label className="text-sm font-medium">
                   Property Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -161,16 +167,16 @@ const Post = () => {
                   value={property.title}
                   onChange={handleChange}
                   name="title"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">
+                <label className="text-sm font-medium">
                   Property Type <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                   name="type"
                   value={property.type}
                   onChange={handleChange}
@@ -184,11 +190,11 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">
+                <label className="text-sm font-medium">
                   Property Status <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                   name="status"
                   value={property.status}
                   onChange={handleChange}
@@ -200,11 +206,11 @@ const Post = () => {
               </div>
 
               <div className="md:col-span-3">
-                <label className="text-sm">Description</label>
+                <label className="text-sm font-medium">Description</label>
                 <textarea
                   rows="4"
                   placeholder="Enter property description"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                   name="description"
                   value={property.description}
                   onChange={handleChange}
@@ -214,12 +220,12 @@ const Post = () => {
           </div>
 
           {/* PRICING & LOCATION */}
-          <div className="bg-white shadow-2xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg mb-4">Pricing & Location</h2>
+          <div className="border border-gray-200 rounded-xl p-5">
+            <h3 className="font-semibold text-lg mb-4">Pricing & Location</h3>
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm">
+                <label className="text-sm font-medium">
                   Price <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -228,14 +234,14 @@ const Post = () => {
                   value={property.price}
                   onChange={handleChange}
                   placeholder="Enter price"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">Negotiable</label>
+                <label className="text-sm font-medium">Negotiable</label>
                 <select
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                   name="negotiable"
                   value={property.negotiable}
                   onChange={handleChange}
@@ -247,9 +253,9 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">Country</label>
+                <label className="text-sm font-medium">Country</label>
                 <select
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                   name="country"
                   value={property.country}
                   onChange={handleChange}
@@ -261,11 +267,11 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">
+                <label className="text-sm font-medium">
                   City <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                   name="location"
                   value={property.location}
                   onChange={handleChange}
@@ -277,114 +283,105 @@ const Post = () => {
               </div>
 
               <div>
-                <label className="text-sm">Address</label>
+                <label className="text-sm font-medium">Address</label>
                 <input
                   type="text"
                   name="address"
                   value={property.address}
                   onChange={handleChange}
                   placeholder="Enter address"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
-                />
-              </div>
-
-              <div className="md:col-span-3">
-                <label className="text-sm">Location on Map (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="Search location on Google Maps"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
             </div>
           </div>
 
           {/* PROPERTY DETAILS */}
-          <div className="bg-white shadow-2xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg mb-4">Property Details</h2>
+          <div className="border border-gray-200 rounded-xl p-5">
+            <h3 className="font-semibold text-lg mb-4">Property Details</h3>
 
             <div className="grid md:grid-cols-4 gap-4">
               <div>
-                <label className="text-sm">Area (sq ft)</label>
+                <label className="text-sm font-medium">Area (sq ft)</label>
                 <input
                   type="number"
                   name="area"
                   value={property.area}
                   onChange={handleChange}
                   placeholder="Enter area"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">Bedrooms</label>
+                <label className="text-sm font-medium">Bedrooms</label>
                 <input
                   type="number"
                   name="bedroom"
                   value={property.bedroom}
                   onChange={handleChange}
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">Bathrooms</label>
+                <label className="text-sm font-medium">Bathrooms</label>
                 <input
                   type="number"
                   name="bathroom"
                   value={property.bathroom}
                   onChange={handleChange}
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">Floors</label>
+                <label className="text-sm font-medium">Floors</label>
                 <input
                   type="number"
                   name="floors"
                   value={property.floors}
                   onChange={handleChange}
                   placeholder="Enter floors"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">Parking Spaces</label>
+                <label className="text-sm font-medium">Parking Spaces</label>
                 <input
                   type="number"
                   name="parking"
                   value={property.parking}
                   onChange={handleChange}
                   placeholder="Parking spaces"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm">Year Built</label>
+                <label className="text-sm font-medium">Year Built</label>
                 <input
                   type="number"
                   name="yearBuilt"
                   value={property.yearBuilt}
                   onChange={handleChange}
                   placeholder="Year built"
-                  className="w-full mt-1 border border-gray-500 rounded-lg p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-lg p-2.5 focus:outline-none focus:border-gray-400"
                 />
               </div>
             </div>
           </div>
 
           {/* FACILITIES */}
-          <div className="bg-white shadow-2xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg mb-4">Facilities</h2>
+          <div className="border border-gray-200 rounded-xl p-5">
+            <h3 className="font-semibold text-lg mb-4">Facilities</h3>
 
             <div className="grid md:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-3">
               {FACILITIES.map((item) => (
                 <label
                   key={item}
-                  className="flex items-center gap-2 border border-gray-500 rounded-lg p-3 cursor-pointer hover:bg-gray-50"
+                  className="flex items-center gap-2 border border-gray-300 rounded-lg p-3 cursor-pointer hover:bg-gray-50"
                 >
                   <input
                     type="checkbox"
@@ -398,12 +395,12 @@ const Post = () => {
           </div>
 
           {/* PROPERTY IMAGES */}
-          <div className="bg-white shadow-2xl rounded-xl p-5">
-            <h2 className="font-semibold text-lg mb-4">
+          <div className="border border-gray-200 rounded-xl p-5">
+            <h3 className="font-semibold text-lg mb-4">
               Property Images <span className="text-red-500">*</span>
-            </h2>
+            </h3>
 
-            <div className="border-2 border-dashed rounded-xl p-10 text-center">
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center">
               <input
                 type="file"
                 accept="image/*"
@@ -440,7 +437,7 @@ const Post = () => {
                             prev.filter((_, i) => i !== index),
                           )
                         }
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 hover:bg-red-600"
                       >
                         ×
                       </button>
@@ -495,7 +492,7 @@ const Post = () => {
           </div> */}
 
           {/* TERMS & CONDITIONS */}
-          <div className="bg-white shadow-2xl rounded-xl p-5">
+          <div className="border border-gray-200 rounded-xl p-5">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -513,19 +510,24 @@ const Post = () => {
 
           {/* BUTTONS */}
           <div className="flex justify-between">
-            <a
-              href="/"
-              className="shadow-2xl px-6 py-3 rounded-lg bg-white hover:bg-gray-100"
+            <button
+              type="button"
+              onClick={() => {
+                setProperty(INITIAL_PROPERTY);
+                setFacilities([]);
+                setImages([]);
+              }}
+              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
             >
-              Cancel
-            </a>
+              Reset Form
+            </button>
 
             <button
               type="submit"
               disabled={submitting}
-              className="bg-black text-white px-8 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-gray-900 text-white px-8 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition"
             >
-              {submitting ? "Publishing..." : "Publish Property"}
+              {submitting ? "Submitting..." : "Submit Property"}
             </button>
           </div>
         </form>

@@ -14,8 +14,8 @@ const Navbar = () => {
 
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const { login, setLogin } = useAuth();
-
+  const { login, setLogin, role } = useAuth();
+  console.log("ROLE:", role);
   const location = useLocation();
   const isLanding = location.pathname === "/";
 
@@ -97,19 +97,22 @@ const Navbar = () => {
       <Link to="/listing" className="hidden sm:block">
         Properties
       </Link>
-      <Link to="/dashboard" className="hidden sm:block">
+      <Link
+        to={role === "admin" ? "/admin" : "/dashboard"}
+        className="hidden sm:block"
+      >
         Dashboard
       </Link>
       <button
         className="hidden sm:block cursor-pointer"
         onClick={() => {
           if (isLanding) {
-            const aboutSection = document.getElementById('about');
+            const aboutSection = document.getElementById("about");
             if (aboutSection) {
-              aboutSection.scrollIntoView({ behavior: 'smooth' });
+              aboutSection.scrollIntoView({ behavior: "smooth" });
             }
           } else {
-            navigate('/#about');
+            navigate("/#about");
           }
         }}
       >
@@ -119,12 +122,12 @@ const Navbar = () => {
         className="hidden sm:block cursor-pointer"
         onClick={() => {
           if (isLanding) {
-            const reviewSection = document.getElementById('review');
+            const reviewSection = document.getElementById("review");
             if (reviewSection) {
-              reviewSection.scrollIntoView({ behavior: 'smooth' });
+              reviewSection.scrollIntoView({ behavior: "smooth" });
             }
           } else {
-            navigate('/#review');
+            navigate("/#review");
           }
         }}
       >
@@ -177,12 +180,12 @@ const Navbar = () => {
                   <div className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg border w-40 z-50">
                     <button
                       onClick={() => {
-                        navigate("/dashboard");
+                        navigate(role === "admin" ? "/admin" : "/dashboard");
                         setOpen(false);
                       }}
                       className="w-full text-left px-4 py-2 md:hidden text-black hover:bg-gray-100"
                     >
-                      Dashboard
+                      {role === "admin" ? "Admin" : "Dashboard"}
                     </button>
                     <button
                       onClick={() => {

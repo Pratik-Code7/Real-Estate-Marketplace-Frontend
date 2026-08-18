@@ -158,8 +158,9 @@ function PropertiesSection() {
                         onChange={(e) => setEditFormData({ ...editFormData, listingStatus: e.target.value })}
                         className="border rounded px-2 py-1"
                       >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Verified">Verified</option>
+                        <option value="Rejected">Rejected</option>
                       </select>
                     </td>
                     <td className="py-3 px-2">-</td>
@@ -189,7 +190,11 @@ function PropertiesSection() {
                     <td className="py-3 px-2">{property.price}</td>
                     <td className="py-3 px-2">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        property.status === "Active" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"
+                        property.status === "Verified"
+                          ? "bg-green-100 text-green-700"
+                          : property.status === "Rejected"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-orange-100 text-orange-700"
                       }`}>
                         {property.status}
                       </span>
@@ -205,7 +210,7 @@ function PropertiesSection() {
                         >
                           <Edit size={16} />
                         </button>
-                        {property.status !== "Active" && (
+                        {property.status === "Pending" && (
                           <button
                             onClick={() => handleApprove(property._id)}
                             className="p-1 hover:bg-green-100 rounded text-green-600"
@@ -214,7 +219,7 @@ function PropertiesSection() {
                             <Check size={16} />
                           </button>
                         )}
-                        {property.status === "Active" && (
+                        {property.status === "Verified" && (
                           <button
                             onClick={() => handleReject(property._id)}
                             className="p-1 hover:bg-orange-100 rounded text-orange-600"

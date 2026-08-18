@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 import { toast } from "react-toastify";
+import { Bath, BedDouble, MapPin, Maximize2 } from "lucide-react";
 
 const List_item = ({ property }) => {
   const { login } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
-  const [favoriteId, setFavoriteId] = useState(null);
   const image = property.images?.[0] || "https://via.placeholder.com/400x300";
   const API_URL = "http://localhost:3000/api";
 
@@ -22,7 +22,6 @@ const List_item = ({ property }) => {
             },
           );
           setIsFavorite(res.data.isFavorite);
-          setFavoriteId(res.data.favoriteId);
         } catch (error) {
           console.error("Error checking favorite status:", error);
         }
@@ -47,16 +46,14 @@ const List_item = ({ property }) => {
           withCredentials: true,
         });
         setIsFavorite(false);
-        setFavoriteId(null);
         toast.success("Removed from favorites");
       } else {
-        const res = await axios.post(
+        await axios.post(
           `${API_URL}/favorites/add`,
           { propertyId: property._id },
           { withCredentials: true },
         );
         setIsFavorite(true);
-        setFavoriteId(res.data.favorite._id);
         toast.success("Added to favorites");
       }
     } catch (error) {
@@ -68,7 +65,7 @@ const List_item = ({ property }) => {
   return (
     <Link to={`/property/${property._id}`} className="block">
       <div className="cursor-pointer">
-        <div className="w-full max-w-sm mx-auto rounded-lg overflow-hidden shadow-lg bg-white flex flex-col group hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 cursor-pointer">
+        <div className="w-full max-w-sm mx-auto overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
           {/* IMAGE */}
           <div className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden">
             <img
@@ -78,8 +75,8 @@ const List_item = ({ property }) => {
             />
 
             {/* Status Badge - Top Left */}
-            <div className="absolute top-3 left-3 bg-white px-3.5 py-2.5 rounded-full text-xs font-semibold shadow-md ">
-              {property.status || "Active"}
+            <div className="absolute top-3 left-3 rounded-full bg-white px-3 py-1.5 text-xs font-semibold shadow-sm">
+              {property.status || "Property"}
             </div>
 
             {/* Favorite Button - Top Right */}
@@ -94,30 +91,33 @@ const List_item = ({ property }) => {
           </div>
 
           {/* CONTENT */}
-          <div className="p-4 flex flex-col gap-1">
-            <h2 className="text-base sm:text-lg font-semibold">
+          <div className="p-4 sm:p-5">
+            <h2 className="text-base font-semibold sm:text-lg">
               {property.title}
             </h2>
 
-            <div className="flex items-center gap-2 text-gray-700">
-              <i className="ri-map-pin-2-fill"></i>
+            <div className="mt-2 flex items-center gap-1.5 text-slate-500">
+              <MapPin size={15} />
               <p className="text-sm">{property.location}</p>
             </div>
 
-            <div className="flex flex-wrap gap-2 text-xs font-medium text-gray-600 ">
+            <div className="mt-4 flex flex-wrap gap-4 border-t border-slate-300 pt-3 text-sm text-slate-600">
               {property.bedroom && (
-                <div className=" bg-gray-200 rounded-lg px-3 py-2">
-                  {property.bedroom} Room
+                <div className="flex items-center gap-1.5">
+                  <BedDouble size={17} className="text-emerald-700" />
+                  <span>{property.bedroom} Bed</span>
                 </div>
               )}
               {property.bathroom && (
-                <div className=" bg-gray-200 rounded-lg px-3 py-2">
-                  {property.bathroom} Bath
+                <div className="flex items-center gap-1.5">
+                  <Bath size={17} className="text-emerald-700" />
+                  <span>{property.bathroom} Bath</span>
                 </div>
               )}
               {property.area && (
-                <div className=" bg-gray-200   rounded-lg px-3 py-2">
-                  {property.area} sqft
+                <div className="flex items-center gap-1.5">
+                  <Maximize2 size={17} className="text-emerald-700" />
+                  <span>{property.area} sqft</span>
                 </div>
               )}
             </div>

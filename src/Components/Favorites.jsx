@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import Fav_Comp from "./Fav_Comp";
 import FavoriteSkeleton from "./FavoriteSkeleton";
 
@@ -29,14 +30,25 @@ const Favorites = () => {
     fetchFavorites();
   }, []);
 
-  const handleRemoveFavorite = async (favoriteId) => {
+  const handleRemoveFavorite = async (favoriteId, propertyId) => {
     try {
-      await axios.delete(`${API_URL}/favorites/delete/${favoriteId}`, {
-        withCredentials: true,
-      });
-      setFavorites(favorites.filter((fav) => fav._id !== favoriteId));
+      if (favoriteId) {
+        await axios.delete(`${API_URL}/favorites/delete/${favoriteId}`, {
+          withCredentials: true,
+        });
+      } else if (propertyId) {
+        await axios.delete(`${API_URL}/favorites/remove/${propertyId}`, {
+          withCredentials: true,
+        });
+      }
+
+      setFavorites((prev) =>
+        prev.filter((fav) => fav._id !== favoriteId && fav.property?._id !== propertyId)
+      );
+      toast.success("Removed from favorites");
     } catch (error) {
       console.error("Error removing favorite:", error);
+      toast.error(error.response?.data?.message || "Failed to remove favorite");
     }
   };
 

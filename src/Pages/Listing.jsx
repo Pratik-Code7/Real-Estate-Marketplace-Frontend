@@ -20,8 +20,24 @@ const Listing = () => {
 
   // NEW: data state
   const [properties, setProperties] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // NEW: fetch available locations
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/api/property/locations", {
+          withCredentials: true,
+        });
+        setLocations(res.data);
+      } catch (err) {
+        console.error("Error fetching locations:", err);
+      }
+    };
+    fetchLocations();
+  }, []);
 
   useEffect(() => {
     const loc = searchParams.get("location") || "";
@@ -154,9 +170,15 @@ const Listing = () => {
                     name="location"
                     value={tempFilters.location}
                     onChange={handleChange}
+                    list="location-suggestions"
                     placeholder="Search Location..."
                     className="border border-gray-300 rounded-xl px-4 py-2 outline-none focus:border-black"
                   />
+                  <datalist id="location-suggestions">
+                    {locations.map((loc, idx) => (
+                      <option key={idx} value={loc} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div className="flex flex-col gap-2">

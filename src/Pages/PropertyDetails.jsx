@@ -1,73 +1,59 @@
-import React, { useState, useEffect, useRef } from "react";
-
-import { useParams, useNavigate } from "react-router-dom";
-
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import loading from "../assets/wmremove-transformed.mp4";
-import { useAuth } from "../Components/AuthContext";
-
+import {
+  ArrowLeft,
+  Bath,
+  BedDouble,
+  Building2,
+  CalendarDays,
+  Check,
+  CircleCheck,
+  Eye,
+  Heart,
+  MapPin,
+  Maximize2,
+  Share2,
+} from "lucide-react";
 import { toast } from "react-toastify";
+import { useAuth } from "../Components/AuthContext";
+import Navbar from "../Components/Navbar";
 
-const PropertyDetails = () => {
+const API_URL = "http://localhost:3000/api";
+const FALLBACK_IMAGE = "https://via.placeholder.com/1200x800?text=Property";
+
+function PropertyDetails() {
   const { id } = useParams();
-
   const navigate = useNavigate();
-
   const { login } = useAuth();
-
   const [property, setProperty] = useState(null);
-
   const [loading, setLoading] = useState(true);
-
   const [isFavorite, setIsFavorite] = useState(false);
-
-  const [favoriteId, setFavoriteId] = useState(null);
-
-  const API_URL = "http://localhost:3000/api";
+  const [selectedImage, setSelectedImage] = useState(0);
   const hasIncrementedView = useRef(false);
-  const handleShare = async () => {
-    const shareData = {
-      title: property.title,
-      text: `Check out this property on Nestra: ${property.title}`,
-      url: window.location.href,
-    };
 
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success("Property link copied!");
-      }
-    } catch (error) {
-      // User closed/cancelled the share menu
-      if (error.name !== "AbortError") {
-        console.error("Share failed:", error);
-        toast.error("Unable to share property");
-      }
-    }
-  };
   useEffect(() => {
-    const fetchProperty = async (incrementView = true) => {
+    const fetchProperty = async () => {
+      setLoading(true);
+
       try {
-        const endpoint = incrementView ? `${API_URL}/property/${id}` : `${API_URL}/property/${id}/view`;
+        const endpoint = hasIncrementedView.current
+          ? `${API_URL}/property/${id}/view`
+          : `${API_URL}/property/${id}`;
+        hasIncrementedView.current = true;
         const res = await axios.get(endpoint);
         setProperty(res.data);
+        setSelectedImage(0);
       } catch (error) {
         console.error("Error fetching property:", error);
+        setProperty(null);
       } finally {
         setLoading(false);
       }
     };
 
-    // Only increment view once per session
-    if (!hasIncrementedView.current) {
-      hasIncrementedView.current = true;
-      fetchProperty(true);
-    } else {
-      fetchProperty(false);
-    }
-  }, [id, API_URL]);
+    fetchProperty();
+  }, [id]);
 
   useEffect(() => {
     const checkFavoriteStatus = async () => {
@@ -77,23 +63,9 @@ const PropertyDetails = () => {
         const res = await axios.get(`${API_URL}/favorites/list`, {
           withCredentials: true,
         });
-
-        const favorites = res.data;
-
-        const favorite = favorites.find((item) => item.property?._id === id);
-
-        if (favorite) {
-          setIsFavorite(true);
-          setFavoriteId(favorite._id);
-        } else {
-          setIsFavorite(false);
-          setFavoriteId(null);
-        }
+        setIsFavorite(res.data.some((item) => item.property?._id === id));
       } catch (error) {
-        console.error(
-          "Error checking favorite:",
-          error.response?.data || error,
-        );
+        console.error("Error checking favorite:", error);
       }
     };
 
@@ -103,9 +75,7 @@ const PropertyDetails = () => {
   const handleFavoriteToggle = async () => {
     if (!login) {
       toast.error("Please login to save properties");
-
       navigate("/auth");
-
       return;
     }
 
@@ -114,408 +84,422 @@ const PropertyDetails = () => {
         await axios.delete(`${API_URL}/favorites/remove/${id}`, {
           withCredentials: true,
         });
-
         setIsFavorite(false);
-
-        setFavoriteId(null);
-
         toast.success("Removed from favorites");
       } else {
-        const res = await axios.post(
+        await axios.post(
           `${API_URL}/favorites/add`,
-
           { propertyId: id },
-
           { withCredentials: true },
         );
-
         setIsFavorite(true);
-
-        setFavoriteId(res.data.favorite._id);
-
         toast.success("Added to favorites");
       }
     } catch (error) {
       console.error("Error toggling favorite:", error);
+      toast.error(
+        error.response?.data?.message || "Unable to update favorites",
+      );
+    }
+  };
 
-      toast.error(error.response?.data?.message || "Error updating favorites");
+  const handleShare = async () => {
+    try {
+      const shareData = {
+        title: property.title,
+        text: `Check out ${property.title} on Nestra`,
+        url: window.location.href,
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Property link copied");
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        toast.error("Unable to share property");
+      }
     }
   };
 
   if (loading) {
     return (
-      <video
-        autoPlay
-        loop
-        src={loading}
-        className="w-64 h-64 md:w-96 md:h-96 object-cover"
-        muted
-      />
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center text-slate-500">
+          Loading property details...
+        </div>
+      </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="min-h-screen flex justify-center items-center text-3xl font-bold">
-        Property Not Found
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
+          <h1 className="text-2xl font-semibold">Property not found</h1>
+          <button
+            onClick={() => navigate("/listing")}
+            className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-white"
+          >
+            Browse properties
+          </button>
+        </div>
       </div>
     );
   }
 
+  const images = property.images?.length ? property.images : [FALLBACK_IMAGE];
+  const currentImage = images[selectedImage] || images[0];
+  const isVerified = ["Verified", "Active"].includes(property.listingStatus);
+  const postedDate = property.createdAt
+    ? new Date(property.createdAt).toLocaleDateString()
+    : "Not available";
+  const stats = [
+    { label: "Bedrooms", value: property.bedroom ?? 0, Icon: BedDouble },
+    { label: "Bathrooms", value: property.bathroom ?? 0, Icon: Bath },
+    { label: "Area", value: `${property.area ?? 0} sqft`, Icon: Maximize2 },
+    { label: "Property type", value: property.type, Icon: Building2 },
+  ];
+  const details = [
+    ["Listing type", property.status || "Not specified"],
+    ["Property type", property.type || "Not specified"],
+    ["Country", property.country || "Not specified"],
+    ["Address", property.address || "Not specified"],
+    ["Floors", property.floors ?? "Not specified"],
+    ["Parking spaces", property.parking ?? "Not specified"],
+    ["Year built", property.yearBuilt ?? "Not specified"],
+    ["Price negotiable", property.negotiable ? "Yes" : "No"],
+  ];
+
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {/* ================= HERO ================= */}
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <Navbar />
 
-      <div className="relative h-[500px] overflow-hidden">
-        <img
-          src={property.images?.[0] || "https://via.placeholder.com/800x500"}
-          alt={property.title}
-          className="w-full h-full object-cover"
-        />
-
-        <div className="absolute inset-0 bg-black/40"></div>
-
-        {/* Top Buttons */}
-
-        <div className="absolute top-6 left-6 right-6 flex justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition"
-          >
-            <i className="ri-arrow-left-line text-xl"></i>
-          </button>
-
-          <div className="flex gap-3">
+      <main className="mx-auto max-w-[1440px]  px-4 py-7 sm:px-6 lg:px-8">
+        {" "}
+        <section className="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between gap-3">
             <button
-              onClick={handleFavoriteToggle}
-              className={`w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition ${isFavorite ? "text-red-500" : ""}`}
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/90 backdrop-blur-sm px-3 py-2 text-sm font-medium hover:bg-white shadow-sm"
             >
-              <i
-                className={`${isFavorite ? "ri-heart-fill" : "ri-heart-line"} text-xl`}
-              ></i>
+              <ArrowLeft size={17} /> Back
             </button>
-
-            <button
-              onClick={handleShare}
-              className="w-12 h-12 rounded-full bg-white shadow flex items-center justify-center hover:bg-gray-100 transition"
-              title="Share property"
-            >
-              <i className="ri-share-line text-xl"></i>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleShare}
+                className="rounded-lg border border-slate-200 bg-white/90 backdrop-blur-sm p-2.5 hover:bg-white shadow-sm"
+                title="Share property"
+              >
+                <Share2 size={18} />
+              </button>
+              <button
+                onClick={handleFavoriteToggle}
+                className={`rounded-lg border p-2.5 backdrop-blur-sm shadow-sm ${
+                  isFavorite
+                    ? "border-red-200 bg-red-50/90 text-red-600 hover:bg-red-50"
+                    : "border-slate-200 bg-white/90 hover:bg-white"
+                }`}
+                title={
+                  isFavorite ? "Remove from saved properties" : "Save property"
+                }
+              >
+                <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
+              </button>
+            </div>
           </div>
-        </div>
+          {images.length === 1 && (
+            <img
+              src={images[0]}
+              alt={property.title}
+              className="h-72 w-full object-cover sm:h-[460px]"
+            />
+          )}
 
-        {/* Bottom Info */}
+          {images.length === 2 && (
+            <div className="grid grid-cols-2 gap-1">
+              {images.map((image, index) => (
+                <button
+                  key={image + index}
+                  type="button"
+                  onClick={() => setSelectedImage(index)}
+                  className="overflow-hidden"
+                >
+                  <img
+                    src={image}
+                    alt={`${property.title} ${index + 1}`}
+                    className="h-64 w-full object-cover sm:h-[420px]"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
 
-        <div className="absolute bottom-10 left-10 text-white">
-          <span className="bg-white text-black px-4 py-2 rounded-full font-medium">
-            {property.type}
-          </span>
+          {images.length === 3 && (
+            <div className="grid grid-cols-2 gap-1">
+              <button
+                type="button"
+                onClick={() => setSelectedImage(0)}
+                className="row-span-2 overflow-hidden"
+              >
+                <img
+                  src={images[0]}
+                  alt={`${property.title} 1`}
+                  className="h-[420px] w-full object-cover"
+                />
+              </button>
+              {images.slice(1).map((image, index) => (
+                <button
+                  key={image + index}
+                  type="button"
+                  onClick={() => setSelectedImage(index + 1)}
+                  className="overflow-hidden"
+                >
+                  <img
+                    src={image}
+                    alt={`${property.title} ${index + 2}`}
+                    className="h-[209px] w-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
 
-          <h1 className="text-5xl font-bold mt-5">{property.title}</h1>
+          {images.length === 4 && (
+            <div className="grid grid-cols-2 gap-1">
+              {images.map((image, index) => (
+                <button
+                  key={image + index}
+                  type="button"
+                  onClick={() => setSelectedImage(index)}
+                  className="overflow-hidden"
+                >
+                  <img
+                    src={image}
+                    alt={`${property.title} ${index + 1}`}
+                    className="h-52 w-full object-cover sm:h-[260px]"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
 
-          <div className="flex items-center gap-2 mt-3 text-lg">
-            <i className="ri-map-pin-2-fill"></i>
-
-            <span>{property.location}, Nepal</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ================= IMAGE GALLERY ================= */}
-
-      <div className="max-w-7xl mx-auto px-6 -mt-12 relative z-10">
-        <div className="bg-white rounded-3xl shadow-lg p-5">
-          <div className="grid grid-cols-4 gap-4">
-            {property.images?.slice(0, 4).map((img, index) => (
-              <img
-                key={index}
-                src={img}
-                alt=""
-                className="h-36 w-full object-cover rounded-2xl cursor-pointer hover:scale-105 duration-300"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ================= MAIN CONTENT ================= */}
-
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* ================= LEFT COLUMN ================= */}
-
-          <div className="lg:col-span-2">
-            {/* Header */}
-
-            <div className="bg-white rounded-3xl shadow-sm p-8">
-              <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6">
-                <div>
-                  <h2 className="text-4xl font-bold">{property.title}</h2>
-
-                  <div className="flex items-center gap-2 mt-3 text-gray-500">
-                    <i className="ri-map-pin-2-fill text-lg"></i>
-
-                    <span>{property.location}, Nepal</span>
-                  </div>
-
-                  <div className="flex items-center gap-5 mt-5">
-                    <div className="flex items-center gap-2">
-                      <i className="ri-star-fill text-yellow-400"></i>
-
-                      <span className="font-semibold">4.8</span>
-                    </div>
-
-                    <span className="text-gray-400">(23 Reviews)</span>
-                  </div>
+          {images.length > 4 && (
+            <>
+              <div className="grid gap-1 md:grid-cols-2">
+                <img
+                  src={currentImage}
+                  alt={property.title}
+                  className="h-72 w-full object-cover md:h-[420px]"
+                />
+                <div className="grid grid-cols-2 gap-1">
+                  {images.slice(1, 5).map((image, index) => (
+                    <button
+                      key={image + index}
+                      type="button"
+                      onClick={() => setSelectedImage(index + 1)}
+                      className="relative min-h-36 overflow-hidden text-left"
+                    >
+                      <img
+                        src={image}
+                        alt={`${property.title} ${index + 2}`}
+                        className="h-full w-full object-cover"
+                      />
+                      {index === 3 && images.length > 5 && (
+                        <span className="absolute inset-0 grid place-items-center bg-slate-950/55 text-lg font-semibold text-white">
+                          +{images.length - 5} photos
+                        </span>
+                      )}
+                    </button>
+                  ))}
                 </div>
-
-                <div className="text-left lg:text-right">
-                  <h2 className="text-5xl font-bold">Rs {property.price}</h2>
-
-                  <p className="text-gray-500 mt-2">per month</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-8">
-              <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-                <i className="ri-hotel-bed-fill text-4xl"></i>
-
-                <p className="mt-4 text-gray-500">Bedrooms</p>
-
-                <h3 className="font-bold text-2xl">{property.bedroom || 0}</h3>
               </div>
 
-              <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-                <i className="ri-showers-fill text-4xl"></i>
-
-                <p className="mt-4 text-gray-500">Bathrooms</p>
-
-                <h3 className="font-bold text-2xl">{property.bathroom || 0}</h3>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-                <i className="ri-ruler-2-line text-4xl"></i>
-
-                <p className="mt-4 text-gray-500">Area</p>
-
-                <h3 className="font-bold text-2xl">
-                  {property.area || 0} sqft
-                </h3>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-sm p-6 text-center">
-                <i className="ri-home-4-fill text-4xl"></i>
-
-                <p className="mt-4 text-gray-500">Type</p>
-
-                <h3 className="font-bold text-2xl">{property.type}</h3>
-              </div>
-            </div>
-
-            {/* Description */}
-
-            <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-              <h2 className="text-2xl font-bold mb-6">Description</h2>
-
-              <p className="text-gray-600 leading-8">{property.description}</p>
-            </div>
-
-            {/* Amenities */}
-
-            <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-              <h2 className="text-2xl font-bold mb-6">Amenities</h2>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-                {property.facilities?.map((item) => (
-                  <div
-                    key={item}
-                    className="border rounded-2xl p-5 flex items-center gap-4 hover:bg-black hover:text-white duration-300 cursor-pointer"
+              <div className="flex flex-wrap gap-2 border-t border-slate-100 p-3">
+                {images.slice(0, 6).map((image, index) => (
+                  <button
+                    key={image + index}
+                    type="button"
+                    onClick={() => setSelectedImage(index)}
+                    className={`h-14 w-14 overflow-hidden rounded-md border-2 ${
+                      selectedImage === index
+                        ? "border-emerald-600"
+                        : "border-transparent"
+                    }`}
                   >
-                    {item === "Parking" && (
-                      <i className="ri-parking-box-fill text-2xl"></i>
-                    )}
+                    <img
+                      src={image}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </section>
+        <div className="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-7">
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                      {property.status}
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+                        isVerified
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      <CircleCheck size={14} />{" "}
+                      {isVerified ? "Verified" : "Pending"}
+                    </span>
+                  </div>
+                  <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+                    {property.title}
+                  </h1>
+                  <p className="mt-3 flex items-center gap-2 text-slate-500">
+                    <MapPin size={18} /> {property.location}
+                    {property.country ? `, ${property.country}` : ""}
+                  </p>
+                </div>
+                <div className="sm:text-right">
+                  <p className="text-sm text-slate-500">
+                    {property.status === "For Rent" ? "Monthly rent" : "Price"}
+                  </p>
+                  <p className="mt-1 text-3xl font-bold">
+                    Rs {Number(property.price || 0).toLocaleString()}
+                  </p>
+                  {property.status === "For Rent" && (
+                    <p className="text-sm text-slate-500">per month</p>
+                  )}
+                </div>
+              </div>
+            </section>
 
-                    {item === "WiFi" && (
-                      <i className="ri-wifi-fill text-2xl"></i>
-                    )}
+            <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {stats.map(({ label, value, Icon }) => (
+                <div
+                  key={label}
+                  className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200"
+                >
+                  <Icon size={21} className="text-emerald-700" />
+                  <p className="mt-3 text-xs text-slate-500">{label}</p>
+                  <p className="mt-1 font-semibold">{value}</p>
+                </div>
+              ))}
+            </section>
 
-                    {item === "Swimming Pool" && (
-                      <i className="ri-water-flash-fill text-2xl"></i>
-                    )}
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="text-xl font-bold">Property overview</h2>
+              <p className="mt-4 whitespace-pre-line leading-7 text-slate-600">
+                {property.description ||
+                  "No description has been provided for this property."}
+              </p>
+            </section>
 
-                    {item === "Gym" && (
-                      <i className="ri-heart-pulse-fill text-2xl"></i>
-                    )}
-
-                    <span className="font-medium">{item}</span>
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="text-xl font-bold">Property information</h2>
+              <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                {details.map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="flex justify-between gap-4 border-b border-slate-100 pb-3 text-sm"
+                  >
+                    <span className="text-slate-500">{label}</span>
+                    <span className="text-right font-medium">{value}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            {/* Property Details */}
-
-            <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-              <h2 className="text-2xl font-bold mb-6">Property Details</h2>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <p className="text-gray-500">Property Type</p>
-
-                  <h3 className="font-semibold mt-1">{property.type}</h3>
+            {property.facilities?.length > 0 && (
+              <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <h2 className="text-xl font-bold">Facilities</h2>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {property.facilities.map((facility) => (
+                    <div
+                      key={facility}
+                      className="flex items-center gap-3 rounded-lg bg-slate-50 px-4 py-3 text-sm"
+                    >
+                      <Check size={17} className="text-emerald-700" />
+                      {facility}
+                    </div>
+                  ))}
                 </div>
+              </section>
+            )}
 
-                <div>
-                  <p className="text-gray-500">Status</p>
-
-                  <h3 className="font-semibold mt-1">
-                    {property.status || "Available"}
-                  </h3>
-                </div>
-
-                <div>
-                  <p className="text-gray-500">Bedrooms</p>
-
-                  <h3 className="font-semibold mt-1">
-                    {property.bedroom || 0}
-                  </h3>
-                </div>
-
-                <div>
-                  <p className="text-gray-500">Bathrooms</p>
-
-                  <h3 className="font-semibold mt-1">
-                    {property.bathroom || 0}
-                  </h3>
-                </div>
-
-                <div>
-                  <p className="text-gray-500">Area</p>
-
-                  <h3 className="font-semibold mt-1">
-                    {property.area || 0} sqft
-                  </h3>
-                </div>
-
-                <div>
-                  <p className="text-gray-500">Negotiable</p>
-
-                  <h3 className="font-semibold mt-1">
-                    {property.negotiable ? "Yes" : "No"}
-                  </h3>
-                </div>
-              </div>
-            </div>
-
-            {/* Location */}
-
-            <div className="bg-white rounded-3xl shadow-sm p-8 mt-8">
-              <h2 className="text-2xl font-bold mb-6">Location</h2>
-
-              <div className="rounded-2xl overflow-hidden">
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="text-xl font-bold">Location</h2>
+              <div className="mt-5 overflow-hidden rounded-xl border border-slate-200">
                 <iframe
-                  title="map"
-                  src={`https://maps.google.com/maps?q=${property.location},Nepal&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                  className="w-full h-80"
+                  title="Property location"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(`${property.location}, ${property.country || "Nepal"}`)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                  className="h-80 w-full"
+                  loading="lazy"
                 />
               </div>
-            </div>
+            </section>
           </div>
 
-          {/* End of Left Column */}
+          <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <p className="text-sm text-slate-500">Listing summary</p>
+              <p className="mt-2 text-3xl font-bold">
+                Rs {Number(property.price || 0).toLocaleString()}
+              </p>
+              {property.status === "For Rent" && (
+                <p className="text-sm text-slate-500">per month</p>
+              )}
+              <button
+                onClick={handleFavoriteToggle}
+                className={`mt-6 flex w-full items-center justify-center gap-2 rounded-lg py-3 font-semibold ${
+                  isFavorite
+                    ? "bg-red-50 text-red-600"
+                    : "bg-emerald-700 text-white hover:bg-emerald-800"
+                }`}
+              >
+                <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
+                {isFavorite ? "Saved property" : "Save property"}
+              </button>
+              <button
+                onClick={handleShare}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 py-3 font-semibold hover:bg-slate-50"
+              >
+                <Share2 size={18} /> Share listing
+              </button>
+            </section>
 
-          {/* ================= RIGHT SIDEBAR ================= */}
-
-          <div>
-            <div className="sticky top-8 space-y-6">
-              {/* Price Card */}
-
-              <div className="bg-white rounded-3xl shadow-sm p-7">
-                <p className="text-gray-500">Monthly Rent</p>
-
-                <h2 className="text-4xl font-bold mt-2">Rs {property.price}</h2>
-
-                <p className="text-gray-400">/ month</p>
-
-                <button className="w-full mt-8 bg-black text-white py-4 rounded-xl hover:bg-gray-800 duration-300">
-                  Contact Owner
-                </button>
-
-                <button className="w-full mt-3 border py-4 rounded-xl hover:bg-gray-100 duration-300">
-                  <i className="ri-whatsapp-line mr-2"></i>
-                  WhatsApp
-                </button>
-
-                <button
-                  onClick={handleFavoriteToggle}
-                  className={`w-full mt-3 border py-4 rounded-xl hover:bg-gray-100 duration-300 ${isFavorite ? "text-red-500 border-red-200" : ""}`}
-                >
-                  <i
-                    className={`${isFavorite ? "ri-heart-fill" : "ri-heart-line"} mr-2`}
-                  ></i>
-
-                  {isFavorite ? "Saved" : "Save Property"}
-                </button>
-              </div>
-
-              {/* Owner Card */}
-
-              <div className="bg-white rounded-3xl shadow-sm p-7">
-                <div className="flex items-center gap-4">
-                  <img
-                    src="https://i.pravatar.cc/100"
-                    alt="Owner"
-                    className="w-16 h-16 rounded-full"
-                  />
-
-                  <div>
-                    <h3 className="font-bold">Property Owner</h3>
-
-                    <p className="text-gray-500 text-sm">Verified Landlord</p>
-                  </div>
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="font-bold">Listing activity</h2>
+              <div className="mt-5 space-y-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-slate-500">
+                    <Eye size={17} /> Views
+                  </span>
+                  <span className="font-semibold">{property.views || 0}</span>
                 </div>
-
-                <div className="mt-6 space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Listings</span>
-
-                    <span className="font-semibold">18</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Rating</span>
-
-                    <span className="font-semibold">⭐ 4.9</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Response</span>
-
-                    <span className="font-semibold text-green-600">5 mins</span>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-slate-500">
+                    <CalendarDays size={17} /> Posted
+                  </span>
+                  <span className="font-semibold">{postedDate}</span>
                 </div>
               </div>
-
-              {/* Report Card */}
-
-              <div className="bg-white rounded-3xl shadow-sm p-7">
-                <button className="w-full text-red-500 border border-red-200 py-3 rounded-xl hover:bg-red-50 duration-300">
-                  <i className="ri-flag-line mr-2"></i>
-                  Report Listing
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* End of Right Sidebar */}
+            </section>
+          </aside>
         </div>
-      </div>
+      </main>
     </div>
   );
-};
+}
 
 export default PropertyDetails;
