@@ -135,12 +135,14 @@ function DashboardContent({
 
                     <span
                       className={`inline-block mt-2 text-[10px] px-2 py-1 rounded-full ${
-                        property.status === "Verified"
+                        property.listingStatus === "Verified"
                           ? "bg-green-100 text-green-700"
-                          : "bg-orange-100 text-orange-700"
+                          : property.listingStatus === "Rejected"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-orange-100 text-orange-700"
                       }`}
                     >
-                      {property.status}
+                      {property.listingStatus || "Pending"}
                     </span>
                   </div>
                 </div>

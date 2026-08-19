@@ -7,7 +7,6 @@ import {
   MessageSquare,
   CalendarDays,
   Star,
-  FileText,
   DollarSign,
   Eye,
 } from "lucide-react";
@@ -47,90 +46,113 @@ function AdminDashboard() {
           return;
         }
 
-        // Fetch all data in parallel
-        const [
-          statsRes,
-          propertiesRes,
-          inquiriesRes,
-          reviewsRes,
-          rolesRes,
-          userRes,
-        ] = await Promise.all([
-          axios.get("http://localhost:3000/api/admin/stats", {
-            withCredentials: true,
-          }),
-          axios.get(
-            "http://localhost:3000/api/admin/properties/recent?limit=4",
-            { withCredentials: true },
-          ),
-          axios.get("http://localhost:3000/api/admin/inquiries/recent", {
-            withCredentials: true,
-          }),
-          axios.get("http://localhost:3000/api/admin/reviews/recent", {
-            withCredentials: true,
-          }),
-          axios.get("http://localhost:3000/api/admin/users/roles", {
-            withCredentials: true,
-          }),
-          axios.get("http://localhost:3000/api/auth/", {
-            withCredentials: true,
-          }),
-        ]);
+        // Fetch data with individual error handling
+        let statsData = [], propertiesData = [], inquiriesData = [], reviewsData = [], rolesData = null, adminName = "Admin";
 
-        // Set admin name
-        if (userRes.data.user) {
-          setAdminName(userRes.data.user.name || "Admin");
+        try {
+          const statsRes = await axios.get("http://localhost:3000/api/admin/stats", {
+            withCredentials: true,
+          });
+          statsData = [
+            {
+              title: "Total Users",
+              value: statsRes.data.totalUsers.toLocaleString(),
+              change: statsRes.data.changes.users,
+              icon: Users,
+              bg: "bg-purple-100",
+              text: "text-purple-600",
+            },
+            {
+              title: "Total Properties",
+              value: statsRes.data.totalProperties.toLocaleString(),
+              change: statsRes.data.changes.properties,
+              icon: House,
+              bg: "bg-blue-100",
+              text: "text-blue-600",
+            },
+            {
+              title: "Active Listings",
+              value: statsRes.data.activeListings.toLocaleString(),
+              change: statsRes.data.changes.listings,
+              icon: MessageSquare,
+              bg: "bg-orange-100",
+              text: "text-orange-500",
+            },
+            {
+              title: "Total Bookings",
+              value: statsRes.data.totalBookings.toLocaleString(),
+              change: statsRes.data.changes.bookings,
+              icon: DollarSign,
+              bg: "bg-green-100",
+              text: "text-green-600",
+            },
+            {
+              title: "Total Views",
+              value: statsRes.data.totalViews.toLocaleString(),
+              change: statsRes.data.changes.views,
+              icon: Eye,
+              bg: "bg-red-100",
+              text: "text-red-500",
+            },
+          ];
+        } catch (err) {
+          console.error("Error fetching stats:", err);
         }
 
-        // Format stats data
-        const statsData = [
-          {
-            title: "Total Users",
-            value: statsRes.data.totalUsers.toLocaleString(),
-            change: statsRes.data.changes.users,
-            icon: Users,
-            bg: "bg-purple-100",
-            text: "text-purple-600",
-          },
-          {
-            title: "Total Properties",
-            value: statsRes.data.totalProperties.toLocaleString(),
-            change: statsRes.data.changes.properties,
-            icon: House,
-            bg: "bg-blue-100",
-            text: "text-blue-600",
-          },
-          {
-            title: "Active Listings",
-            value: statsRes.data.activeListings.toLocaleString(),
-            change: statsRes.data.changes.listings,
-            icon: MessageSquare,
-            bg: "bg-orange-100",
-            text: "text-orange-500",
-          },
-          {
-            title: "Total Bookings",
-            value: statsRes.data.totalBookings.toLocaleString(),
-            change: statsRes.data.changes.bookings,
-            icon: DollarSign,
-            bg: "bg-green-100",
-            text: "text-green-600",
-          },
-          {
-            title: "Total Views",
-            value: statsRes.data.totalViews.toLocaleString(),
-            change: statsRes.data.changes.views,
-            icon: Eye,
-            bg: "bg-red-100",
-            text: "text-red-500",
-          },
-        ];
+        try {
+          const propertiesRes = await axios.get(
+            "http://localhost:3000/api/admin/properties/recent?limit=4",
+            { withCredentials: true },
+          );
+          propertiesData = propertiesRes.data;
+        } catch (err) {
+          console.error("Error fetching properties:", err);
+        }
+
+        try {
+          const inquiriesRes = await axios.get("http://localhost:3000/api/admin/inquiries/recent", {
+            withCredentials: true,
+          });
+          inquiriesData = inquiriesRes.data;
+        } catch (err) {
+          console.error("Error fetching inquiries:", err);
+        }
+
+        try {
+          const reviewsRes = await axios.get("http://localhost:3000/api/admin/reviews/recent", {
+            withCredentials: true,
+          });
+          reviewsData = reviewsRes.data;
+        } catch (err) {
+          console.error("Error fetching reviews:", err);
+        }
+
+        try {
+          const rolesRes = await axios.get("http://localhost:3000/api/admin/users/roles", {
+            withCredentials: true,
+          });
+          rolesData = rolesRes.data;
+        } catch (err) {
+          console.error("Error fetching user roles:", err);
+        }
+
+        try {
+          const userRes = await axios.get("http://localhost:3000/api/auth/", {
+            withCredentials: true,
+          });
+          if (userRes.data.user) {
+            adminName = userRes.data.user.name || "Admin";
+          }
+        } catch (err) {
+          console.error("Error fetching user info:", err);
+        }
 
         setStats(statsData);
-        setProperties(propertiesRes.data);
-        setInquiries(inquiriesRes.data);
-        setReviews(reviewsRes.data);
-        setUserRoles(rolesRes.data);
+        setProperties(propertiesData);
+        setInquiries(inquiriesData);
+        setReviews(reviewsData);
+        setUserRoles(rolesData);
+        setAdminName(adminName);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
         setError("Failed to load dashboard data");
